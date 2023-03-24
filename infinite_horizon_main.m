@@ -1,7 +1,6 @@
 %% Infinite horizon main
 clear;clc;
-load('pendulum_init_guess_T30.mat');
-T = 2;
+load('pendulum_init_guess_T10.mat');
 
 X0 = [0;0];  %theta (rad), thetadot (rad/s)
 Xg = [180*pi/180;0];
@@ -19,25 +18,33 @@ R = 2*10^0 * eye(model.nu);
 
 [K,S,e] = dlqr(A,B, Q, R); % neglected half in matlab implementation doesn't matter
 
+
+inc = 1; 
+for T = 5:5:50
+
 %% ILQR model-based (finite horizon controller.)
 
 Q_ilqr = Q;
 R_ilqr = R; 
 Q_T = S; 
+
 if T>length(u_nom)
     u_guess = [u_nom, zeros(1,T-length(u_nom))];
 else
     u_guess = u_nom(1:T);
 end
+
+
+
 [x_nom, u_nom, cost] = ILQR(model, X0, Xg, u_guess, T, Q_ilqr, R_ilqr, Q_T);
 
 cost_timestep = calc_cost(x_nom, u_nom, Xg, T, Q_ilqr, R_ilqr, Q_T);
 
-plot_trajectory(x_nom, u_nom, T);
+%plot_trajectory(x_nom, u_nom, T);
 
 %% plot cost convergence
-figure;
-semilogy(1:length(cost),cost,'LineWidth',2);
+%figure;
+%semilogy(1:length(cost),cost,'LineWidth',2);
 
 %%
 disp('Cost to go estimated');
@@ -76,17 +83,27 @@ fprintf('True CTG: %f \n', cost_term);
 %% full trajectory.
 X = [x_nom, x_term(:,2:end)];
 U = [u_nom, u_term];
-plot_trajectory(X, U,T+T_term);
+%plot_trajectory(X, U,T+T_term);
 
 %% plot cost vs timesteps
-
+%{
 figure;
 semilogy(0:length(cost_timestep)-1, cost_timestep, 'LineWidth', 3);
 xlabel('time-steps');
 ylabel('cost incurred');
 title('Cost incurred at every time step.')
-
+%}
 %% Cost
 
-cost_ilqr = sum(cost_timestep(1:T+1))
-total_cost = sum(cost_timestep)
+cost_ilqr(inc) = sum(cost_timestep(1:T+1));
+total_cost(inc) = sum(cost_timestep);
+T_vec(inc) = T;
+exp_CTG_vec(inc) = CTG_est;
+true_CTG_vec(inc) = cost_term;
+
+inc = inc + 1;
+end
+
+%% plot metrics
+
+plot_cost_metrics(T_vec, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec);
