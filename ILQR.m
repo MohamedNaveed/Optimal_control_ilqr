@@ -1,8 +1,8 @@
-function [x_nom, u_nom, cost] = ILQR(Model, x0, xg, u_nom, horizon, QT)
+function [x_nom, u_nom, cost] = ILQR(Model, x0, xg, u_nom, horizon, Q, R, QT)
 
 %% variables
-R = 2*10^0 * eye(Model.nu);
-Q = eye(Model.nx);
+%R = 2*10^0 * eye(Model.nu);
+%Q = eye(Model.nx);
 %QT = 100*eye(Model.nx);
 
 x_nom = zeros(Model.nx,horizon+1); x_nom(:,1) = x0;
@@ -66,7 +66,9 @@ while forward_flag
         cost(iter) = cost_new;
         x_nom = x_new;
         u_nom = u_new;
-        vk(:,horizon+1) = QT*(x_nom(:,horizon+1)-xg);
+        state_err = (x_nom(:,horizon+1)-xg);
+        state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
+        vk(:,horizon+1) = QT*(state_err);
 
         if alpha<0.05
             alpha=0.05;
@@ -133,7 +135,7 @@ iter = iter + 1;
 rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
 
 
-if ((abs(rate_conv_diff) < 0.005) && iter > 4)
+if ((abs(rate_conv_diff) < 0.001) && iter == maxIte)
     criteria = false;
     disp('converged');
     
