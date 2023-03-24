@@ -1,7 +1,7 @@
 %% Infinite horizon main
 clear;clc;
 load('pendulum_init_guess_T30.mat');
-T = 30;
+T = 2;
 
 X0 = [0;0];  %theta (rad), thetadot (rad/s)
 Xg = [180*pi/180;0];
@@ -15,14 +15,23 @@ U_term = 0;
 [A,B] = pendulum_A_B(Xg, U_term);
 
 Q = eye(model.nx);
-R = eye(model.nu);
+R = 2*10^0 * eye(model.nu);
 
-[K,S,e] = dlqr(A,B,Q,R);
+[K,S,e] = dlqr(A,B, Q, R); % neglected half in matlab implementation doesn't matter
 
 %% ILQR model-based (finite horizon controller.)
 
-u_guess = [u_nom, zeros(1,T-length(u_nom))]; 
-[x_nom, u_nom, cost] = ILQR(model, X0, Xg, u_guess, T, S);
+Q_ilqr = Q;
+R_ilqr = R; 
+Q_T = S; 
+if T>length(u_nom)
+    u_guess = [u_nom, zeros(1,T-length(u_nom))];
+else
+    u_guess = u_nom(1:T);
+end
+[x_nom, u_nom, cost] = ILQR(model, X0, Xg, u_guess, T, Q_ilqr, R_ilqr, Q_T);
+
+cost_timestep = calc_cost(x_nom, u_nom, Xg, T, Q_ilqr, R_ilqr, Q_T);
 
 plot_trajectory(x_nom, u_nom, T);
 
@@ -37,6 +46,7 @@ state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
 
 CTG_est = 0.5*state_err'*S*state_err;
 fprintf('Estimated CTG: %f \n', CTG_est);
+
 %% Terminal controller. 
 
 T_term = 100;
@@ -52,11 +62,13 @@ for t = 1:100
     state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
     
     u_term(:,t) = -K*state_err;
-        
-    cost_term = cost_term + 0.5*state_err'*Q*state_err + ... 
-                                0.5*u_term(:,t)'*R*u_term(:,t);
+    
+    cur_cost = 0.5*state_err'*Q*state_err + 0.5*u_term(:,t)'*R*u_term(:,t);
+    cost_term = cost_term + cur_cost;
                             
     x_term(:,t+1) = pendulum_nl_state_prop(t, x_term(:,t), u_term(:,t));
+
+    cost_timestep = [cost_timestep, cur_cost];
        
 end
 fprintf('True CTG: %f \n', cost_term);
@@ -65,3 +77,16 @@ fprintf('True CTG: %f \n', cost_term);
 X = [x_nom, x_term(:,2:end)];
 U = [u_nom, u_term];
 plot_trajectory(X, U,T+T_term);
+
+%% plot cost vs timesteps
+
+figure;
+semilogy(0:length(cost_timestep)-1, cost_timestep, 'LineWidth', 3);
+xlabel('time-steps');
+ylabel('cost incurred');
+title('Cost incurred at every time step.')
+
+%% Cost
+
+cost_ilqr = sum(cost_timestep(1:T+1))
+total_cost = sum(cost_timestep)
