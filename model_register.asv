@@ -19,8 +19,6 @@ if strcmp(modelName, 'pendulum')
     [A,B] = pendulum_A_B(model, model.Xg, U_term);
     model.A = A;
     model.B = B;
-    model.state_prop = @pendulum_nl_state_prop;
-    model.cal_A_B = @pendulum_A_B;
 
 elseif  strcmp(modelName, 'cartpole')
 
@@ -35,19 +33,17 @@ elseif  strcmp(modelName, 'cartpole')
     model.alpha = 0.1;
     model.horizon = 30;
     model.X0 = [0;0;0;0]; %x, xdot, theta(rad), thetadot(rad/s)
-    model.Xg = [0;0;178*pi/180;0];
+    model.Xg = [0;0;180*pi/180;0];
     model.R = eye(model.nu);
     model.Q = eye(model.nx);
     [Ac, Bc] = cartpole_eqs(model);
-    model.Ac = Ac; % continuous time linearised model (symbolic)
+    model.Ac = Ac;
     model.Bc = Bc;
     % model around the equilibrium at the upright
     U_term = 0;
-    [A, B] = cartpole_A_B(model, model.Xg, U_term);
-    model.A = A;
-    model.B = B;
-    model.state_prop = @cartpole_nl_state_prop;
-    model.cal_A_B = @cartpole_A_B;
+    [A, B]
+    model.A = 0;
+    model.B = 0;%TODO: to enter correct value
 
 end
 

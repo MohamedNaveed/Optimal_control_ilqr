@@ -1,24 +1,23 @@
-function [x_nom, u_nom, cost] = ILQR(Model, x0, xg, u_nom, horizon, Q, R, QT)
+function [x_nom, u_nom, cost] = ILQR(model, x0, xg, u_nom, horizon,...
+                    Q, R, QT, maxIte)
 
 %% variables
 %R = 2*10^0 * eye(Model.nu);
 %Q = eye(Model.nx);
 %QT = 100*eye(Model.nx);
 
-x_nom = zeros(Model.nx,horizon+1); x_nom(:,1) = x0;
-Sk = zeros(Model.nx,Model.nx,horizon+1); Sk(:,:,horizon+1) = QT;
-vk = zeros(Model.nx,horizon+1);
-K = zeros(Model.nu,Model.nx,horizon);
-Kv = zeros(Model.nu,Model.nx,horizon);
-Ku = zeros(Model.nu,Model.nu,horizon);
-Quu = zeros(Model.nu,Model.nu,horizon);
-kt  = zeros(Model.nu,horizon);
-At = zeros(Model.nx,Model.nx,horizon);
-Bt = zeros(Model.nx,Model.nu,horizon);
+x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
+Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = QT;
+vk = zeros(model.nx,horizon+1);
+K = zeros(model.nu,model.nx,horizon);
+Kv = zeros(model.nu,model.nx,horizon);
+Ku = zeros(model.nu,model.nu,horizon);
+Quu = zeros(model.nu,model.nu,horizon);
+kt  = zeros(model.nu,horizon);
+At = zeros(model.nx,model.nx,horizon);
+Bt = zeros(model.nx,model.nu,horizon);
 criteria = true;
 conv_rate = ones(3,1);
-
-maxIte = 100;
 
 alpha = 1;
 iter = 1;
@@ -50,7 +49,7 @@ while forward_flag
         cost_new = cost_new + 0.5*state_err'*Q*state_err + ... 
                                 0.5*u_new(:,i)'*R*u_new(:,i);
                             
-        x_new(:,i+1) = pendulum_nl_state_prop(i, x_new(:,i), u_new(:,i));
+        x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model.dt);
     end
     state_err = (x_new(:,horizon+1) - xg);
     state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
@@ -93,8 +92,7 @@ delta_j=0;
 for i=horizon:-1:1
     
     % find perturbation matrices
-    [A, B] = pendulum_A_B(x_nom(:,i), u_nom(:,i));
-    
+    [A, B] = model.cal_A_B(model, x_nom(:,i), u_nom(:,i));
     At(:,:,i) = A;
     Bt(:,:,i) = B;
     
