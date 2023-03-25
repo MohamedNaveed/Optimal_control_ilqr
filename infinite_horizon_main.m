@@ -1,10 +1,10 @@
 %% Infinite horizon main
 clear;clc;
-load('pendulum_init_guess_T10.mat');
+%load('pendulum_init_guess_T10.mat');
 
-model = model_register('pendulum');
+model = model_register('cartpole');
 
-%test_pendulum(Xg);
+test_cartpole(model, model.Xg);
 
 %% Terminal controller 
 
@@ -14,19 +14,23 @@ model = model_register('pendulum');
 inc = 1; 
 for T = 20
 
-%% ILQR model-based (finite horizon controller.)
-%{
+% ILQR model-based (finite horizon controller.)
+
 Q_ilqr = model.Q;
 R_ilqr = model.R; 
 Q_T = S; 
 
-if T>length(u_nom)
-    u_guess = [u_nom, zeros(1,T-length(u_nom))];
+if exist('u_nom','var') == 0
+    u_guess = zeros(model.nu,T);
+elseif T>length(u_nom)
+    u_guess = [u_nom, zeros(model.nu,T-length(u_nom))];
 else
-    u_guess = u_nom(1:T);
+    u_guess = u_nom(model.nu,1:T);
 end
 
-[x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, T, Q_ilqr, R_ilqr, Q_T);
+maxIte = 10;
+[x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, T,...
+                            Q_ilqr, R_ilqr, Q_T, maxIte);
 
 cost_timestep = calc_cost(x_nom, u_nom, model.Xg, T, Q_ilqr, R_ilqr, Q_T);
 
@@ -36,21 +40,20 @@ plot_trajectory(x_nom, u_nom, T);
 %figure;
 %semilogy(1:length(cost),cost,'LineWidth',2);
 
-%%
-disp('Cost to go estimated');
+%% Cost to go estimated
 state_err = (x_nom(:,T+1) - model.Xg);
 state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
 
 CTG_est = 0.5*state_err'*S*state_err;
 fprintf('Estimated CTG: %f \n', CTG_est);
-%}
+
 %% Terminal controller. 
 
 T_term = 100;
 
 x_term = zeros(model.nx,T_term+1);
 u_term = zeros(model.nu,T_term);
-x_term(:,1) = model.X0;%x_nom(:,T+1);
+x_term(:,1) = x_nom(:,T+1);
 cost_term = 0;
 
 for t = 1:100
@@ -63,17 +66,17 @@ for t = 1:100
     cur_cost = 0.5*state_err'*model.Q*state_err + 0.5*u_term(:,t)'*model.R*u_term(:,t);
     cost_term = cost_term + cur_cost;
                             
-    x_term(:,t+1) = pendulum_nl_state_prop(t, x_term(:,t), u_term(:,t));
+    x_term(:,t+1) = model.state_prop(t, x_term(:,t), u_term(:,t), model.dt);
 
-    %cost_timestep = [cost_timestep, cur_cost];
+    cost_timestep = [cost_timestep, cur_cost];
        
 end
 fprintf('True CTG: %f \n', cost_term);
 
 %% full trajectory.
-X = [x_term(:,1:end)];
-U = [u_term];
-plot_trajectory(X, U,T_term);
+X = [x_nom, x_term(:,2:end)];
+U = [u_nom, u_term];
+plot_trajectory(X, U, T+T_term);
 
 %% plot cost vs timesteps
 %{
