@@ -36,21 +36,24 @@ while forward_flag
     u_new = u_nom;
     
     for i=1:horizon
-       
-        state_err = compute_state_error(x_new(:,i), x_nom(:,i), model.name);
+        
+    
+        state_err = compute_state_err(x_new(:,i), x_nom(:,i));
+        state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
         
         u_new(:,i) = u_nom(:,i) - K(:,:,i)*state_err + ...
                                 alpha*kt(:,i);
         
-        state_err = compute_state_error(x_new(:,i), xg, model.name);
+        state_err = x_new(:,i) - xg;
+        state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
         
         cost_new = cost_new + 0.5*state_err'*Q*state_err + ... 
                                 0.5*u_new(:,i)'*R*u_new(:,i);
                             
         x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
     end
-
-    state_err = compute_state_error(x_new(:,horizon+1), xg, model.name);
+    state_err = (x_new(:,horizon+1) - xg);
+    state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
     
     cost_new = cost_new + 0.5*state_err'*QT*state_err;
     
@@ -63,8 +66,8 @@ while forward_flag
         cost(iter) = cost_new;
         x_nom = x_new;
         u_nom = u_new;
-        state_err = compute_state_error(x_nom(:,horizon+1), xg, model.name);
- 
+        state_err = (x_nom(:,horizon+1)-xg);
+        state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
         vk(:,horizon+1) = QT*(state_err);
 
         if alpha<0.05
@@ -79,10 +82,10 @@ end
 x_traj_ite_ilqr(:,:,iter) = x_nom;
 u_traj_ite_ilqr(:,:,iter) = u_nom;
 
-state_err = compute_state_error(x_nom(:,end), xg, model.name);
-
-state_error_norm = norm(state_err);
-[iter state_error_norm cost_new]
+state_err = x_nom(:,end)-xg;
+state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
+state_error = norm(state_err);
+[iter state_error cost_new]
 
 %% backward pass
 delta_j=0;
@@ -106,7 +109,8 @@ for i=horizon:-1:1
     Ku(:,:,i) = kpreinv*R;
     Sk(:,:,i) = At(:,:,i)'*Sk(:,:,i+1)*(At(:,:,i)-Bt(:,:,i)*K(:,:,i)) + Q;
     
-    state_err = compute_state_error(x_nom(:,i), xg, model.name);
+    state_err = (x_nom(:,i)-xg);
+    state_err(1) = atan2(sin(state_err(1)),cos(state_err(1)));
     vk(:,i) = (At(:,:,i)-Bt(:,:,i)*K(:,:,i))'*vk(:,i+1)-K(:,:,i)'*R*u_nom(:,i)+Q*state_err;
     
     kt(:,i) = - Kv(:,:,i)*vk(:,i+1) - Ku(:,:,i)*u_nom(:,i); 

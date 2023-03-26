@@ -10,8 +10,8 @@ u = U_bar;
 Ac = subs(model.Ac);
 Bc = subs(model.Bc);
 
-A = eye(size(Ac,1)) + Ac*model.dt;
-B = Bc*model.dt;
+A = double(eye(size(Ac,1)) + Ac*model.dt);
+B = double(Bc*model.dt);
 
 end
 
