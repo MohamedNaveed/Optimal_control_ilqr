@@ -9,11 +9,11 @@ model = model_register('cartpole');
 %% Terminal controller 
 
 [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
-
+total_time = 150;
 
 inc = 1; 
 %% iterate over every T
-for T = 40
+for T = [20,25,35]
 
 % ILQR model-based (finite horizon controller.)
 
@@ -36,7 +36,7 @@ maxIte = 100;
 cost_timestep = calc_cost(x_nom, u_nom, model.Xg, T, Q_ilqr, R_ilqr, Q_T, model.name);
 
 %% plot cost convergence
-plot_trajectory(x_nom, u_nom, T, model.name);
+plot_trajectory(x_nom, u_nom, T, 0, model.name);
 figure;
 semilogy(1:length(cost),cost,'LineWidth',2);
 
@@ -48,14 +48,14 @@ fprintf('Estimated CTG: %f \n', CTG_est);
 
 %% Terminal controller. 
 
-T_term = 100;
+T_term = total_time -T;
 
 x_term = zeros(model.nx,T_term+1);
 u_term = zeros(model.nu,T_term);
 x_term(:,1) = x_nom(:,T+1);
 cost_term = 0;
 
-for t = 1:100
+for t = 1:T_term
 
     state_err = compute_state_error(x_term(:,t), model.Xg, model.name);
     
@@ -74,29 +74,34 @@ fprintf('True CTG: %f \n', cost_term);
 %% full trajectory.
 X = [x_nom, x_term(:,2:end)];
 U = [u_nom, u_term];
-plot_trajectory(X, U, T+T_term, model.name);
+plot_trajectory(X, U, T, T_term, model.name);
 
 %% plot cost vs timesteps
-%{
+
 figure;
 semilogy(0:length(cost_timestep)-1, cost_timestep, 'LineWidth', 3);
 xlabel('time-steps');
 ylabel('cost incurred');
 title('Cost incurred at every time step.')
-%}
+
 %% Cost
 
-cost_ilqr(inc) = sum(cost_timestep(1:T+1));
+cost_ilqr(inc) = sum(cost_timestep(1:T));
 total_cost(inc) = sum(cost_timestep);
 T_vec(inc) = T;
 exp_CTG_vec(inc) = CTG_est;
 true_CTG_vec(inc) = cost_term;
-
+ilqr_final_state_error(:,inc) = compute_state_error(x_nom(:,T+1), model.Xg, model.name);
 inc = inc + 1;
 end
 
 %% plot metrics
 
 plot_cost_metrics(T_vec, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec);
-
-save("cartpole_exp_26_3.mat");
+T_vec
+ilqr_final_state_error
+cost_ilqr
+total_cost
+exp_CTG_vec
+true_CTG_vec
+save("cartpole_exp_26_20_30.mat");

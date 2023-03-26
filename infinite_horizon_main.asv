@@ -1,6 +1,6 @@
 %% Infinite horizon main
 clear;clc;
-load('cartpole_init_guess_T30.mat');
+load('cartpole_init_guess_T40.mat');
 
 model = model_register('cartpole');
 
@@ -29,14 +29,14 @@ else
     u_guess = u_nom(model.nu,1:T);
 end
 
-maxIte = 100;
+maxIte = 500;
 [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, T,...
                             Q_ilqr, R_ilqr, Q_T, maxIte);
 
 cost_timestep = calc_cost(x_nom, u_nom, model.Xg, T, Q_ilqr, R_ilqr, Q_T, model.name);
 
 %% plot cost convergence
-plot_trajectory(x_nom, u_nom, T, model.name);
+plot_trajectory(x_nom, u_nom, T, 0, model.name);
 figure;
 semilogy(1:length(cost),cost,'LineWidth',2);
 
@@ -74,24 +74,24 @@ fprintf('True CTG: %f \n', cost_term);
 %% full trajectory.
 X = [x_nom, x_term(:,2:end)];
 U = [u_nom, u_term];
-plot_trajectory(X, U, T+T_term, model.name);
+plot_trajectory(X, U, T, T_term, model.name);
 
 %% plot cost vs timesteps
-%{
+
 figure;
 semilogy(0:length(cost_timestep)-1, cost_timestep, 'LineWidth', 3);
 xlabel('time-steps');
 ylabel('cost incurred');
 title('Cost incurred at every time step.')
-%}
+
 %% Cost
 
-cost_ilqr(inc) = sum(cost_timestep(1:T+1));
+cost_ilqr(inc) = sum(cost_timestep(1:T));
 total_cost(inc) = sum(cost_timestep);
 T_vec(inc) = T;
 exp_CTG_vec(inc) = CTG_est;
 true_CTG_vec(inc) = cost_term;
-
+ilqr_final_state_error(:,inc) = compute_state_error(x_nom(:,T+1), model.Xg, model.name);
 inc = inc + 1;
 end
 
@@ -99,4 +99,4 @@ end
 
 plot_cost_metrics(T_vec, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec);
 
-save("cartpole_exp_26_3.mat");
+%save("cartpole_exp_26_3.mat");
