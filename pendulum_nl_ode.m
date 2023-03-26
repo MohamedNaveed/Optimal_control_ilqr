@@ -1,5 +1,4 @@
-function [state_dot] = pendulum_nl_ode(t, state, U)
-    model = model_register('pendulum');
+function [state_dot] = pendulum_nl_ode(t, state, U, model)
     
     state_dot = zeros(model.nx,1);
     

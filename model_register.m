@@ -23,7 +23,7 @@ if strcmp(modelName, 'pendulum')
     model.cal_A_B = @pendulum_A_B;
 
 elseif  strcmp(modelName, 'cartpole')
-
+    model.name = 'cartpole';
     model.M = 1;
     model.m = 0.01;
     model.L = 0.6;
@@ -32,12 +32,12 @@ elseif  strcmp(modelName, 'cartpole')
     model.nx = 4;
     model.nu = 1;
     model.g = 9.81;
-    model.alpha = 0.1;
+    model.alpha = 1;
     model.horizon = 30;
-    model.X0 = [0;0;0;0]; %x, xdot, theta(rad), thetadot(rad/s)
-    model.Xg = [0;0;178*pi/180;0];
+    model.Xg = [0;0;2*pi/180;0]; %x, xdot, theta(rad), thetadot(rad/s)
+    model.X0 = [0;0;pi;0];% pole bottom is pi
     model.R = eye(model.nu);
-    model.Q = eye(model.nx);
+    model.Q = 0.1*eye(model.nx);
     [Ac, Bc] = cartpole_eqs(model);
     model.Ac = Ac; % continuous time linearised model (symbolic)
     model.Bc = Bc;

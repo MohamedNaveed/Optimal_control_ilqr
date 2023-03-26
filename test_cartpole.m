@@ -1,6 +1,6 @@
 function [] = test_cartpole(model, X0)
 
-T = 100;
+T = 20;
 X = zeros(model.nx, T+1);
 X(:,1) = X0;
 
