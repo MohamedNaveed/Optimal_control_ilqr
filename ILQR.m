@@ -19,7 +19,7 @@ Bt = zeros(model.nx,model.nu,horizon);
 criteria = true;
 conv_rate = ones(3,1);
 
-alpha = 1;
+alpha = model.alpha;
 iter = 1;
 idx = 1;
 z = 1;

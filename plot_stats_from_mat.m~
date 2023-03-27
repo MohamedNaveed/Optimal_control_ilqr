@@ -16,7 +16,7 @@ xlabel('time-steps');
 ylabel('cost incurred');
 title('Cost incurred at every time step.')
 
-%}
+
 %%
 plot_cost_metrics(T_list, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec); %cost vs T
 
