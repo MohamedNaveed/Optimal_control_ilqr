@@ -34,7 +34,7 @@ elseif  strcmp(modelName, 'cartpole')
     model.g = 9.81;
     model.alpha = 1;
     model.Xg = [0;0;0*pi/180;0]; %x, xdot, theta(rad), thetadot(rad/s)
-    model.X0 = [0;0;pi;0];% pole bottom is pi
+    model.X0 = [0;0;45*pi/180;0];% pole bottom is pi
     model.R = eye(model.nu);
     model.Q = 0.1*eye(model.nx);
     [Ac, Bc] = cartpole_eqs(model);

@@ -1,9 +1,9 @@
 %% Infinite horizon main
 clear;clc;
-load('cartpole_init_guess_T30.mat');
-
+load('cartpole_init_guess_T30_X0_45_U.mat');
+SAVE_file = false;
 model = model_register('cartpole');
-
+u_guess_from_file = U;%u_nom;
 %test_cartpole(model, model.Xg);
 
 %% Terminal controller 
@@ -11,25 +11,36 @@ model = model_register('cartpole');
 [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 total_time = 150;
 
-inc = 1; 
+
 %% iterate over every T
-for T = [20,25,35]
+T_list = 30;
+
+cost_ilqr = zeros(1,length(T_list));
+total_cost = zeros(1,length(T_list));
+exp_CTG_vec = zeros(1,length(T_list));
+true_CTG_vec = zeros(1,length(T_list));
+ilqr_final_state_error = zeros(model.nx,length(T_list));
+norm_final_state_error = zeros(1,length(T_list));
+
+M = length(T_list); % number of nodes. 
+
+for iT = 1:length(T_list)
+%parfor (iT = 1:length(T_list), M)
 
 % ILQR model-based (finite horizon controller.)
 
+T = T_list(iT);
 Q_ilqr = model.Q;
 R_ilqr = model.R; 
 Q_T = S; 
 
-if exist('u_nom','var') == 0
-    u_guess = zeros(model.nu,T);
-elseif T>length(u_nom)
-    u_guess = [u_nom, zeros(model.nu,T-length(u_nom))];
+if T>length(u_guess_from_file)
+    u_guess = [u_guess_from_file, zeros(model.nu,T-length(u_guess_from_file))];
 else
-    u_guess = u_nom(model.nu,1:T);
+    u_guess = u_guess_from_file(model.nu,1:T);
 end
 
-maxIte = 100;
+maxIte = 10;
 [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, T,...
                             Q_ilqr, R_ilqr, Q_T, maxIte);
 
@@ -86,22 +97,25 @@ title('Cost incurred at every time step.')
 
 %% Cost
 
-cost_ilqr(inc) = sum(cost_timestep(1:T));
-total_cost(inc) = sum(cost_timestep);
-T_vec(inc) = T;
-exp_CTG_vec(inc) = CTG_est;
-true_CTG_vec(inc) = cost_term;
-ilqr_final_state_error(:,inc) = compute_state_error(x_nom(:,T+1), model.Xg, model.name);
-inc = inc + 1;
+cost_ilqr(iT) = sum(cost_timestep(1:T));
+total_cost(iT) = sum(cost_timestep);
+exp_CTG_vec(iT) = CTG_est;
+true_CTG_vec(iT) = cost_term;
+ilqr_final_state_error(:,iT) = compute_state_error(x_nom(:,T+1), model.Xg, model.name);
+norm_final_state_error(iT) = norm(ilqr_final_state_error(:,iT));
+
 end
 
 %% plot metrics
 
-plot_cost_metrics(T_vec, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec);
-T_vec
+plot_cost_metrics(T_list, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec);
+
 ilqr_final_state_error
 cost_ilqr
 total_cost
 exp_CTG_vec
 true_CTG_vec
-save("cartpole_exp_26_20_30.mat");
+
+if SAVE_file
+    save("cartpole_exp_27_T30_X0_45.mat");
+end
