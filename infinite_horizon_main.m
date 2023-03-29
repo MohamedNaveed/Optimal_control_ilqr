@@ -10,7 +10,7 @@ u_guess_from_file = U;%u_nom;
 
 [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 total_time = 150;
-
+maxIte = 10;
 
 %% iterate over every T
 T_list = 30;
@@ -40,7 +40,7 @@ else
     u_guess = u_guess_from_file(model.nu,1:T);
 end
 
-maxIte = 10;
+
 [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, T,...
                             Q_ilqr, R_ilqr, Q_T, maxIte);
 
