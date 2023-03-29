@@ -1,7 +1,7 @@
 % get statistics from mat file.
 clear;
 clc;
-load("cartpole_exp_27_1_30_X0_45_newini.mat");
+load("pendulum_exp_28_1_30_X0_75.mat");
 
 %{
 plot_trajectory(x_nom, u_nom, T, 0, model.name); %ilqr trajectory
