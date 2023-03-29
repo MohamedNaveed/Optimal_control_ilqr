@@ -1,7 +1,7 @@
 %% Infinite horizon main
 clear;clc;
 %load('pendulum_init_guess_T10_U.mat');
-load('pendulum_init_guess_T150_X0_75.mat');
+load('pendulum_init_guess_T150_X0_0.mat');
 SAVE_file = false;
 model = model_register('pendulum');
 u_guess_from_file = u_nom;
@@ -11,7 +11,7 @@ u_guess_from_file = u_nom;
 
 [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 total_time = 150;
-maxIte = 50;
+maxIte = 200;
 
 %% iterate over every T
 T_list = 150;

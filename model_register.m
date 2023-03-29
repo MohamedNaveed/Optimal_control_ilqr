@@ -10,7 +10,7 @@ if strcmp(modelName, 'pendulum')
     model.nx = 2;
     model.nu = 1;
     model.g = 9.81;
-    model.X0 = [75*pi/180;0];  %theta (rad), thetadot (rad/s)
+    model.X0 = [0*pi/180;0];  %theta (rad), thetadot (rad/s)
     model.Xg = [180*pi/180;0];
     model.Q = eye(model.nx);
     model.R = 2*10^0 * eye(model.nu);
