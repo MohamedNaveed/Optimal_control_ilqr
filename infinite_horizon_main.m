@@ -1,19 +1,20 @@
 %% Infinite horizon main
 clear;clc;
-load('cartpole_init_guess_T30_X0_45_U.mat');
+%load('pendulum_init_guess_T10_U.mat');
+load('pendulum_init_guess_T150_X0_75.mat');
 SAVE_file = false;
-model = model_register('cartpole');
-u_guess_from_file = U;%u_nom;
+model = model_register('pendulum');
+u_guess_from_file = u_nom;
 %test_cartpole(model, model.Xg);
 
 %% Terminal controller 
 
 [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 total_time = 150;
-maxIte = 10;
+maxIte = 50;
 
 %% iterate over every T
-T_list = 30;
+T_list = 150;
 
 cost_ilqr = zeros(1,length(T_list));
 total_cost = zeros(1,length(T_list));
@@ -32,7 +33,12 @@ for iT = 1:length(T_list)
 T = T_list(iT);
 Q_ilqr = model.Q;
 R_ilqr = model.R; 
-Q_T = S; 
+
+if T_list(1) == total_time
+    Q_T = zeros(size(S));
+else
+    Q_T = S;
+end
 
 if T>length(u_guess_from_file)
     u_guess = [u_guess_from_file, zeros(model.nu,T-length(u_guess_from_file))];
@@ -65,28 +71,29 @@ x_term = zeros(model.nx,T_term+1);
 u_term = zeros(model.nu,T_term);
 x_term(:,1) = x_nom(:,T+1);
 cost_term = 0;
+if T_term > 0
+    for t = 1:T_term
 
-for t = 1:T_term
+        state_err = compute_state_error(x_term(:,t), model.Xg, model.name);
 
-    state_err = compute_state_error(x_term(:,t), model.Xg, model.name);
-    
-    u_term(:,t) = -K*state_err;
-    
-    cur_cost = 0.5*state_err'*model.Q*state_err + 0.5*u_term(:,t)'*model.R*u_term(:,t);
-    cost_term = cost_term + cur_cost;
-                            
-    x_term(:,t+1) = model.state_prop(t, x_term(:,t), u_term(:,t), model);
+        u_term(:,t) = -K*state_err;
 
-    cost_timestep = [cost_timestep, cur_cost];
-       
+        cur_cost = 0.5*state_err'*model.Q*state_err + 0.5*u_term(:,t)'*model.R*u_term(:,t);
+        cost_term = cost_term + cur_cost;
+
+        x_term(:,t+1) = model.state_prop(t, x_term(:,t), u_term(:,t), model);
+
+        cost_timestep = [cost_timestep, cur_cost];
+
+    end
+
+    fprintf('True CTG: %f \n', cost_term);
+
+    %% full trajectory.
+    X = [x_nom, x_term(:,2:end)];
+    U = [u_nom, u_term];
+    plot_trajectory(X, U, T, T_term, model.name);
 end
-fprintf('True CTG: %f \n', cost_term);
-
-%% full trajectory.
-X = [x_nom, x_term(:,2:end)];
-U = [u_nom, u_term];
-plot_trajectory(X, U, T, T_term, model.name);
-
 %% plot cost vs timesteps
 
 figure;
@@ -108,7 +115,7 @@ end
 
 %% plot metrics
 
-plot_cost_metrics(T_list, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec);
+%plot_cost_metrics(T_list, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec);
 
 ilqr_final_state_error
 cost_ilqr
