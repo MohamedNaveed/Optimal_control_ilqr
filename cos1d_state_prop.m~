@@ -1,0 +1,7 @@
+function [state_n] = cos1d_state_prop(t, state, U, model, epsilon)
+
+w = epsilon*model.u_max*sqrt(model.dt)*normrnd(0,1);
+
+state_n = state + (-cos(state) + U)*model.dt + w;
+
+end

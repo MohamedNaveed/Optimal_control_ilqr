@@ -1,9 +1,12 @@
 %% Infinite horizon main
 clear;clc;
 %load('pendulum_init_guess_T10_U.mat');
-load('pendulum_init_guess_T150_X0_0.mat');
+load('cartpole_init_guess_T10.mat');
 SAVE_file = false;
-model = model_register('pendulum');
+model = model_register('cartpole');
+model.name
+disp('initial state');
+model.X0
 u_guess_from_file = u_nom;
 %test_cartpole(model, model.Xg);
 
@@ -11,10 +14,10 @@ u_guess_from_file = u_nom;
 
 [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 total_time = 150;
-maxIte = 200;
+maxIte = 25;
 
 %% iterate over every T
-T_list = 150;
+T_list = 10;
 
 cost_ilqr = zeros(1,length(T_list));
 total_cost = zeros(1,length(T_list));
@@ -40,6 +43,8 @@ else
     Q_T = S;
 end
 
+%Q_T = zeros(size(S));
+
 if T>length(u_guess_from_file)
     u_guess = [u_guess_from_file, zeros(model.nu,T-length(u_guess_from_file))];
 else
@@ -62,6 +67,7 @@ state_err = compute_state_error(x_nom(:,T+1), model.Xg, model.name);
 
 CTG_est = 0.5*state_err'*S*state_err;
 fprintf('Estimated CTG: %f \n', CTG_est);
+
 
 %% Terminal controller. 
 
