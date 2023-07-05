@@ -7,8 +7,10 @@ if strcmp(modelName, 'pendulum')
 
 elseif strcmp(modelName, 'cartpole')
     state_err = (x - x_bar);
-    state_err(3) = atan2(sin(state_err(3)),cos(state_err(3)));
+    %state_err(3) = atan2(sin(state_err(3)),cos(state_err(3)));
 
+elseif strcmp(modelName, '1dcos')
+    state_err = (x - x_bar);
 end
 
 end

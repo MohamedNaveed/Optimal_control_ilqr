@@ -44,8 +44,8 @@ while iter <= maxIte && criteria
 
             state_err = compute_state_error(x_new(:,i), xg, model.name);
 
-            cost_new = cost_new + (0.5*state_err'*Q*state_err + ... 
-                                    0.5*u_new(:,i)'*R*u_new(:,i));
+            cost_new = cost_new + 0.5*state_err'*Q*state_err + ... 
+                                    0.5*u_new(:,i)'*R*u_new(:,i);
 
             x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
         end
@@ -67,8 +67,8 @@ while iter <= maxIte && criteria
 
             vk(:,horizon+1) = QT*(state_err);
 
-            if alpha<0.005
-                alpha=0.005;
+            if alpha<0.05
+                alpha=0.05;
             end
         else
             alpha = 0.99*alpha;

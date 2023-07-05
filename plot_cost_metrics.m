@@ -30,7 +30,7 @@ if SAVE_PLOT
     set(fig,...
         'PaperPosition',[0 0 screenposition(3:4)],...
         'PaperSize',[screenposition(3:4)]);
-    print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/total_cost_pendulum_X0_75.pdf'
+    print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/total_cost_pendulum_X0_0.pdf'
 end
 
 fig = figure;
@@ -55,7 +55,7 @@ if SAVE_PLOT
     set(fig,...
         'PaperPosition',[0 0 screenposition(3:4)],...
         'PaperSize',[screenposition(3:4)]);
-    print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/terminal_cost_pendulum_X0_75.pdf'
+    print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/terminal_cost_pendulum_X0_0.pdf'
 end
 
 fig =figure;
@@ -76,7 +76,7 @@ if SAVE_PLOT
     set(fig,...
         'PaperPosition',[0 0 screenposition(3:4)],...
         'PaperSize',[screenposition(3:4)]);
-    print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/error_pendulum_X0_75.pdf'
+    print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/error_pendulum_X0_0.pdf'
 end
 
 end
