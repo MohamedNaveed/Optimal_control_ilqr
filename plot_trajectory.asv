@@ -1,9 +1,5 @@
 function [] = plot_trajectory(x_nom, u_nom, horizon, T_term, modelName,modeldt)
 
-if ~exist('modeldt','var')
-    modeldt = 1;
-end
-
 T = horizon + T_term;
 font_size = 14;
 SAVE_PLOT = false;
@@ -92,7 +88,7 @@ elseif strcmp(modelName, 'cartpole')
 
 elseif strcmp(modelName,'1dcos')
     figure;
-    timesteps = (0:T)*modeldt;
+    timesteps = (0:T)*model.dt;
     plot(timesteps, x_nom,'LineWidth',2);
     ylabel('state');
     xlabel('Time steps');
