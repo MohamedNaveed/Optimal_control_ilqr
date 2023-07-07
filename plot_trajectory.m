@@ -97,7 +97,7 @@ elseif strcmp(modelName,'1dcos')
     ylabel('state');
     xlabel('Time steps');
 
-    figure
+    figure;
     plot(timesteps(1:T), u_nom, 'LineWidth',2);
     ylabel('u');
     xlabel('Time steps');

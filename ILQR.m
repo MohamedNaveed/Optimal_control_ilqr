@@ -17,9 +17,9 @@ kt  = zeros(model.nu,horizon);
 At = zeros(model.nx,model.nx,horizon);
 Bt = zeros(model.nx,model.nu,horizon);
 criteria = true;
-conv_rate = ones(3,1);
+conv_rate = [0,100,200]; %convergence rate variable. initialized with random values.
 
-alpha = model.alpha;
+alpha = model.alpha; %step size
 iter = 1;
 idx = 1;
 z = 1;
@@ -82,7 +82,7 @@ while iter <= maxIte && criteria
     state_err = compute_state_error(x_nom(:,end), xg, model.name);
 
     state_error_norm = norm(state_err);
-    [iter state_error_norm cost_new]
+    %[iter state_error_norm cost_new]
 
     %% backward pass
     delta_j=0;
@@ -119,20 +119,20 @@ while iter <= maxIte && criteria
     end
 
     if iter >= 2
-        conv_rate(idx) = abs((cost(iter-1)-cost(iter))/cost0);
+        conv_rate(idx) = abs((cost(iter-1)-cost(iter)));%/cost0);
         idx = idx + 1;
     end
-    if idx > size(conv_rate,1)
+    if idx > length(conv_rate)
         idx = 1;
     end
     iter = iter + 1; 
 
-    rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
+    %rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
+    cost_change = sum(conv_rate);
 
-
-    if ((abs(rate_conv_diff) < 0.001) && iter == maxIte)
+    if ((abs(cost_change) < 0.002) || iter == maxIte)
         criteria = false;
-        disp('converged');
+        %disp('converged');
 
     end
 

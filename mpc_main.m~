@@ -10,20 +10,18 @@ fprintf('final state = %d \n', model.Xg);
 fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 
-%{
 % open loop ilqr
-load('u_guess_1dcos_T150.mat');
-u_guess = u_nom;
+u_guess = zeros(model.nu, model.horizon);
 maxIte = 200;
 
 [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
                             model.Q, model.R, model.Qf, maxIte); %trajectory optimization using iLQR.
-%}
+
 
 %% MPC using ilqr solver
 
 %
-load('u_guess_1dcos_T150.mat');
+load('u_guess_1dcos_T100.mat');
 %u_guess = zeros(model.nu, model.horizon);
 %u_nom = u_guess
 cost_mpc = 0;
@@ -33,7 +31,6 @@ x_mpc(:,1) = model.X0;
 
 u_mpc = zeros(model.nu, model.horizon);
 epsilon = 0.0;
-
 maxIte = 100;
 
 for t = 0:model.horizon-1
