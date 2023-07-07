@@ -60,7 +60,7 @@ elseif strcmp(modelName, '1dcos')
     model.X0 = 1;
     model.state_prop = @cos1d_state_prop;
     model.cal_A_B = @cos1d_A_B;
-    model.horizon = 200;
+    model.horizon = 150;
     model.dt = 1.0/model.horizon;
     model.R = 1*model.dt;
     model.Q = 100*model.dt;
