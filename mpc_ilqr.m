@@ -1,11 +1,16 @@
 function [cost_mpc] = mpc_ilqr(model, epsilon)
 
-load('u_guess_1dcos_T150.mat');
+if model.horizon == 150
+    load('u_guess_1dcos_T150.mat');
+elseif model.horizon == 200
+    load('u_guess_1dcos_T200.mat');
+end
+    
 x_mpc = zeros(model.nx, model.horizon+1);
 x_mpc(:,1) = model.X0;
 
 u_mpc = zeros(model.nu, model.horizon);
-maxIte = 100;
+maxIte = 200;
 cost_mpc = 0;
 
 for t = 0:model.horizon-1

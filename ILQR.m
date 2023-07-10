@@ -130,7 +130,7 @@ while iter <= maxIte && criteria
     %rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
     cost_change = sum(conv_rate);
 
-    if ((abs(cost_change) < 0.002) || iter == maxIte)
+    if ((abs(cost_change) < 0.001) || iter == maxIte)
         criteria = false;
         %disp('converged');
 
