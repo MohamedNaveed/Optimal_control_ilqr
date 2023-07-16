@@ -9,10 +9,10 @@ import matplotlib.pyplot as plt
 params = {'axes.labelsize':16,
             'font.size':12,
             'legend.fontsize':14,
-            'xtick.labelsize':12,
-            'ytick.labelsize':12,
-            'text.usetex':False,
-            'figure.figsize':[4.5,4.5]}
+            'xtick.labelsize':14,
+            'ytick.labelsize':14,
+            'text.usetex':True,
+            'figure.figsize':[4.5,3]}
 pylab.rcParams.update(params)
 
 PLOT_MPC = True #False #
@@ -25,7 +25,7 @@ if __name__=='__main__':
 
     if PLOT_MPC:
         
-        filename_mpc = "/home/naveed/Documents/Optimal_control_ilqr/stochastic_hjb_1dcos_T300000_X200_processNoise_e0.csv"
+        filename_mpc = "/home/naveed/Documents/Optimal_control_ilqr/mpc_1dcos_T200.csv"
         file_mpc = open(filename_mpc,"r")
 
         lines = file_mpc.read().splitlines()
@@ -53,7 +53,7 @@ if __name__=='__main__':
     if PLOT_DP:
         
         filename_dp = "/home/naveed/Documents/Optimal_control_ilqr/stochastic_hjb_1dcos_T300000_X200_processNoise_e0_10.csv"
-
+        #filename_dp = "/home/naveed/Documents/Optimal_control_ilqr/dp_lqp_e0_2.csv"
         file_dp = open(filename_dp,"r")
 
         lines = file_dp.read().splitlines()
@@ -99,7 +99,7 @@ if __name__=='__main__':
 
 
     if PLOT_DP and PLOT_MPC:
-        legend = pylab.legend(["Stochastic", "Deterministic"],loc=2)
+        legend = pylab.legend(["HJB-FD", "MPC-SH"],loc=2)
 
     if PLOT_DP:
         pylab.fill_between(epsilon_dp[Noise_level[0]:Noise_level[1]+1],
@@ -113,15 +113,15 @@ if __name__=='__main__':
                         (cost_mpc[Noise_level[0]:Noise_level[1]+1]+cost_std_mpc[Noise_level[0]:Noise_level[1]+1])/Min_cost,
                         alpha=0.25,linewidth=0,color='b')
 
-    #pylab.ylim(0.99,2000)
+    #pylab.ylim(-1.0,1100)
     #pylab.xlim(-0.01,1.0)
 
-    pylab.xlabel('epsilon')
-    pylab.ylabel('J')
+    pylab.xlabel(r'epsilon')
+    pylab.ylabel(r'Cost incurred ($J$)')
     #pylab.ylabel(r'$J/\bar{J}$')
     #pylab.title('Cost vs error percentage for 3 agent(s) ')
-
-    pylab.savefig('/home/naveed/Documents/Optimal_control_ilqr/'+'cost_deterministic_vs_stochastic_hjb_lownoise', format='pdf',bbox_inches='tight',pad_inches = 0.02) #1- dp, 2- dp replan, 3 - MPC, 4 - MPC_fast
+    #pylab.show()
+    pylab.savefig('/home/naveed/Dropbox/Research/Manuscripts/TAC22/plots/'+'cost_1dcos_mpcT200_low_noise.pdf', format='pdf',bbox_inches='tight',pad_inches = 0.02) #1- dp, 2- dp replan, 3 - MPC, 4 - MPC_fast
 
     if PLOT_MPC:
         file_mpc.close()
