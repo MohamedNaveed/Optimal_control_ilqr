@@ -7,25 +7,25 @@ from random import uniform
 import matplotlib.pyplot as plt
 
 params = {'axes.labelsize':16,
-            'font.size':12,
+            'font.size':14,
             'legend.fontsize':14,
-            'xtick.labelsize':12,
-            'ytick.labelsize':12,
-            'text.usetex':False,
-            'figure.figsize':[4.5,4.5]}
+            'xtick.labelsize':14,
+            'ytick.labelsize':14,
+            'text.usetex':True,
+            'figure.figsize':[4.5,3.0]}
 pylab.rcParams.update(params)
 
 PLOT_MPC = True #False #
 PLOT_DP = True
 
 
-Noise_level = [0,10] #file index 1.6 - 64 1.0 - 54 .4-42
+Noise_level = [0,100] #file index 1.6 - 64 1.0 - 54 .4-42
 
 if __name__=='__main__':
 
     if PLOT_MPC:
         
-        filename_mpc = "/home/naveed/Documents/Optimal_control_ilqr/stochastic_hjb_1dcos_T300000_X200_processNoise_e0.csv"
+        filename_mpc = "/home/naveed/Documents/Optimal_control_ilqr/stochastic_hjb_1dcos_T300000_X200_exp_hjb_cost.csv"
         file_mpc = open(filename_mpc,"r")
 
         lines = file_mpc.read().splitlines()
@@ -99,13 +99,14 @@ if __name__=='__main__':
 
 
     if PLOT_DP and PLOT_MPC:
-        legend = pylab.legend(["Stochastic", "Deterministic"],loc=2)
+        legend = pylab.legend([r"Actual", r"Expected"],loc=2)
 
     if PLOT_DP:
-        pylab.fill_between(epsilon_dp[Noise_level[0]:Noise_level[1]+1],
-                        (cost_dp[Noise_level[0]:Noise_level[1]+1]-cost_std_dp[Noise_level[0]:Noise_level[1]+1])/Min_cost,
-                        (cost_dp[Noise_level[0]:Noise_level[1]+1]+cost_std_dp[Noise_level[0]:Noise_level[1]+1])/Min_cost,
-                        alpha=0.25,linewidth=0,color='r')
+        # pylab.fill_between(epsilon_dp[Noise_level[0]:Noise_level[1]+1],
+        #                 (cost_dp[Noise_level[0]:Noise_level[1]+1]-cost_std_dp[Noise_level[0]:Noise_level[1]+1])/Min_cost,
+        #                 (cost_dp[Noise_level[0]:Noise_level[1]+1]+cost_std_dp[Noise_level[0]:Noise_level[1]+1])/Min_cost,
+        #                 alpha=0.25,linewidth=0,color='r')
+        pass
         
     if PLOT_MPC:
         pylab.fill_between(epsilon_mpc[Noise_level[0]:Noise_level[1]+1],
@@ -113,15 +114,16 @@ if __name__=='__main__':
                         (cost_mpc[Noise_level[0]:Noise_level[1]+1]+cost_std_mpc[Noise_level[0]:Noise_level[1]+1])/Min_cost,
                         alpha=0.25,linewidth=0,color='b')
 
-    #pylab.ylim(0.99,2000)
-    #pylab.xlim(-0.01,1.0)
+    pylab.ylim(-25,1000)
+    pylab.xlim(-0.01,1.0)
 
-    pylab.xlabel('epsilon')
-    pylab.ylabel('J')
+    pylab.xlabel(r'epsilon')
+    pylab.ylabel(r'Cost-to-go')
     #pylab.ylabel(r'$J/\bar{J}$')
     #pylab.title('Cost vs error percentage for 3 agent(s) ')
 
-    pylab.savefig('/home/naveed/Documents/Optimal_control_ilqr/'+'cost_deterministic_vs_stochastic_hjb_lownoise', format='pdf',bbox_inches='tight',pad_inches = 0.02) #1- dp, 2- dp replan, 3 - MPC, 4 - MPC_fast
+    pylab.savefig('/home/naveed/Documents/Optimal_control_ilqr/'+ \
+                  'cost_expected_vs_actual_stochastic_hjb_1dcos.pdf', format='pdf',bbox_inches='tight',pad_inches = 0.02) #1- dp, 2- dp replan, 3 - MPC, 4 - MPC_fast
 
     if PLOT_MPC:
         file_mpc.close()
