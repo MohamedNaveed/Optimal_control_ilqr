@@ -12,6 +12,6 @@ Models available:
 
 Related publications to cite if you use our work:
 
-1. Mohamed, M. N. G., Goyal, R., & Chakravorty, S. An Optimal Solution to Infinite Horizon Nonlinear Control Problems. Accepted in IEEE Conference on Decision and Control (CDC) (2023).  ArXiv preprint arXiv:2304.00375.
+1. Mohamed, M. N. G., Goyal, R., & Chakravorty, S. An Optimal Solution to Infinite Horizon Nonlinear Control Problems. Accepted in IEEE Conference on Decision and Control (CDC) (2023).  ArXiv preprint: https://arxiv.org/abs/2304.00375.
 2. Wang, R., Parunandi, K. S., Sharma, A., Goyal, R., & Chakravorty, S. (2021, December). On the search for feedback in reinforcement learning. In IEEE Conference on Decision and Control (CDC) (pp. 1560-1567) (2021). ArXiv preprint: https://arxiv.org/abs/2002.09478
 
