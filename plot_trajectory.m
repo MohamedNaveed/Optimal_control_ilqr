@@ -1,4 +1,4 @@
-function [] = plot_trajectory(x_nom, u_nom, horizon, T_term, modelName,modeldt)
+function [] = plot_trajectory(x_nom, u_nom, horizon, T_term, modelName, modeldt)
 
 if ~exist('modeldt','var')
     modeldt = 1;
@@ -49,7 +49,7 @@ elseif strcmp(modelName, 'cartpole')
     
     subplot(3,2,3);
     hold on;
-    plot(timesteps, pi - x_nom(3,:),'LineWidth',2);
+    plot(timesteps, x_nom(3,:),'LineWidth',2);
     y = ylim; % current y-axis limits
     plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
