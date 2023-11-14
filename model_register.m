@@ -51,7 +51,11 @@ elseif  strcmp(modelName, 'cartpole')
     model.B = B;
     model.state_prop = @cartpole_nl_state_prop;
     model.cal_A_B = @cartpole_A_B;
-    model.horizon = 30;
+    model.C = [1 0 0 0; 0 1 0 0];
+    model.nz = 2; %number of outputs
+    model.q = 2; %value of q required for ARMA model.
+    model.nZ = model.q*model.nz + (model.q-1)*model.nu; %information-state dimension
+    model.horizon = 30; %time horizon of the finite-horizon OCP
     
 elseif strcmp(modelName, '1dcos')
     
