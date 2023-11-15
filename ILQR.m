@@ -82,7 +82,7 @@ while iter <= maxIte && criteria
     state_err = compute_state_error(x_nom(:,end), xg, model.name);
 
     state_error_norm = norm(state_err);
-    %[iter state_error_norm cost_new]
+    [iter state_error_norm cost_new]
 
     %% backward pass
     delta_j=0;

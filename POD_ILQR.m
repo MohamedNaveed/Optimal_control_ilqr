@@ -1,25 +1,22 @@
-function [x_nom, u_nom, cost] = ILQR(model, x0, xg, u_nom, horizon,...
-                    Q, R, QT, maxIte)
-
-%% variables
-%R = 2*10^0 * eye(Model.nu);
-%Q = eye(Model.nx);
-%QT = 100*eye(Model.nx);
+function [outputArg1,outputArg2] = POD_ILQR(inputArg1,inputArg2)
 
 x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
-Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = QT;
-vk = zeros(model.nx,horizon+1);
-K = zeros(model.nu,model.nx,horizon);
-Kv = zeros(model.nu,model.nx,horizon);
+Z_nom = zeros(model.nZ, horizon+1);
+delta_z = zeros(model.nz,horizon+1);
+delta_u = zeros(Model.nu, horizon);
+Sk = zeros(model.nZ,model.nx,horizon+1); Sk(:,:,horizon+1) = QT;
+vk = zeros(model.nZ,horizon+1);
+K = zeros(model.nu,model.nZ,horizon);
+Kv = zeros(model.nu,model.nZ,horizon);
 Ku = zeros(model.nu,model.nu,horizon);
 Quu = zeros(model.nu,model.nu,horizon);
 kt  = zeros(model.nu,horizon);
-At = zeros(model.nx,model.nx,horizon);
-Bt = zeros(model.nx,model.nu,horizon);
+At = zeros(model.nZ,model.nZ,horizon);
+Bt = zeros(model.nZ,model.nu,horizon);
 criteria = true;
-conv_rate = ones(3,1);
+conv_rate = [0,100,200]; %convergence rate variable. initialized with random values.
 
-alpha = model.alpha;
+alpha = model.alpha; %step size
 iter = 1;
 idx = 1;
 z = 1;
@@ -35,7 +32,7 @@ while iter <= maxIte && criteria
         x_new(:,1) = x0;
         u_new = u_nom;
 
-        for i=1:horizon
+        for i=q:horizon
 
             state_err = compute_state_error(x_new(:,i), x_nom(:,i), model.name);
 
@@ -44,8 +41,8 @@ while iter <= maxIte && criteria
 
             state_err = compute_state_error(x_new(:,i), xg, model.name);
 
-            cost_new = cost_new + 0.5*state_err'*Q*state_err + ... 
-                                    0.5*u_new(:,i)'*R*u_new(:,i);
+            cost_new = cost_new + (0.5*state_err'*Q*state_err + ... 
+                                    0.5*u_new(:,i)'*R*u_new(:,i));
 
             x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
         end
@@ -67,8 +64,8 @@ while iter <= maxIte && criteria
 
             vk(:,horizon+1) = QT*(state_err);
 
-            if alpha<0.05
-                alpha=0.05;
+            if alpha<0.005
+                alpha=0.005;
             end
         else
             alpha = 0.99*alpha;
@@ -119,24 +116,23 @@ while iter <= maxIte && criteria
     end
 
     if iter >= 2
-        conv_rate(idx) = abs((cost(iter-1)-cost(iter))/cost0);
+        conv_rate(idx) = abs((cost(iter-1)-cost(iter)));%/cost0);
         idx = idx + 1;
     end
-    if idx > size(conv_rate,1)
+    if idx > length(conv_rate)
         idx = 1;
     end
     iter = iter + 1; 
 
-    rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
+    %rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
+    cost_change = sum(conv_rate);
 
-
-    if ((abs(rate_conv_diff) < 0.001) && iter == maxIte)
+    if ((abs(cost_change) < 0.001) || iter == maxIte)
         criteria = false;
-        disp('converged');
+        %disp('converged');
 
     end
 
 end
 
 end
-

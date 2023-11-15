@@ -53,7 +53,7 @@ if __name__=='__main__':
     if PLOT_DP:
         
         filename_dp = "/home/naveed/Documents/Optimal_control_ilqr/stochastic_hjb_1dcos_T300000_X200_processNoise_e0_10.csv"
-
+        #filename_dp = "/home/naveed/Documents/Optimal_control_ilqr/dp_lqp_e0_2.csv"
         file_dp = open(filename_dp,"r")
 
         lines = file_dp.read().splitlines()
