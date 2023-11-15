@@ -14,6 +14,7 @@ if strcmp(modelName, 'pendulum')
     model.Xg = [180*pi/180;0];
     model.Q = eye(model.nx);
     model.R = 2*10^0 * eye(model.nu);
+    model.Qf = eye(model.nx);
     model.alpha = 1;
     % model around the equilibrium at the upright
     U_term = 0;
@@ -22,7 +23,8 @@ if strcmp(modelName, 'pendulum')
     model.B = B;
     model.state_prop = @pendulum_nl_state_prop;
     model.cal_A_B = @pendulum_A_B;
-
+    model.horizon = 30;
+    
 elseif  strcmp(modelName, 'cartpole')
     model.name = 'cartpole';
     model.M = 1;
@@ -38,6 +40,7 @@ elseif  strcmp(modelName, 'cartpole')
     model.X0 = [0;0;180*pi/180;0];% pole bottom is pi
     model.R = eye(model.nu);
     model.Q = 0.1*eye(model.nx);
+    model.Qf = 100*eye(model.nx);
     [Ac, Bc] = cartpole_eqs(model);
     model.Ac = Ac; % continuous time linearised model (symbolic)
     model.Bc = Bc;
@@ -48,6 +51,11 @@ elseif  strcmp(modelName, 'cartpole')
     model.B = B;
     model.state_prop = @cartpole_nl_state_prop;
     model.cal_A_B = @cartpole_A_B;
+    model.C = [1 0 0 0; 0 1 0 0];
+    model.nz = 2; %number of outputs
+    model.q = 2; %value of q required for ARMA model.
+    model.nZ = model.q*model.nz + (model.q-1)*model.nu; %information-state dimension
+    model.horizon = 30; %time horizon of the finite-horizon OCP
     
 elseif strcmp(modelName, '1dcos')
     
