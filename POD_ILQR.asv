@@ -76,7 +76,6 @@ while iter <= maxIte && criteria
             cost(iter) = cost_new;
             x_nom = x_new;
             u_nom = u_new;
-            z_nom = z_new;
             Z_nom = Z_new;
             state_err = compute_state_error(Z_nom(:,horizon+1), Zg, model.name);
 
@@ -113,9 +112,9 @@ while iter <= maxIte && criteria
             u_temp = u_nom(:,t_step) + delta_u((t_step-1)*model.nu + 1: ...
                                             t_step*model.nu, sim_iter);
             x_temp = model.state_prop(t_step, x_temp, u_temp, model);
-            z_temp = model.C*x_temp';
-            delta_z(t_step*model.nz + 1: (t_step+1)*model.nz,sim_iter) =...
-                                        z_temp - z_nom(:,t_step+1);
+            z_temp = model.C*x_temp;
+            delta_z(t_step*model.nz + 1: (t_step+1)*model.nz,sim_ter) =...
+                                        z_temp - Z_nom(:,t_step+1);
 
         end
 

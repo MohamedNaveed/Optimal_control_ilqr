@@ -52,11 +52,10 @@ elseif  strcmp(modelName, 'cartpole')
     model.state_prop = @cartpole_nl_state_prop;
     model.cal_A_B = @cartpole_A_B;
     model.C = [1 0 0 0; 0 0 1 0];
-    
+    model.CC = ;%information state system C
     model.nz = 2; %number of outputs
     model.q = 2; %value of q required for ARMA model.
     model.nZ = model.q*model.nz + (model.q-1)*model.nu; %information-state dimension
-    model.CC = [eye(model.nz), zeros(model.nz, model.nZ - model.nz)];%information state system C
     model.horizon = 30; %time horizon of the finite-horizon OCP
     model.nSim = 500;
     model.ptb = 0.01;
