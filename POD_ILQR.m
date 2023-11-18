@@ -1,4 +1,5 @@
-function [Z_nom, u_nom, cost] = POD_ILQR(model, x0, xg, u_nom, horizon,...
+function [x_nom, Z_nom, u_nom, delta_u, delta_z, cost, At, Bt] =...
+        POD_ILQR(model, x0, xg, u_nom, horizon,...
                     Q, R, QT, maxIte)
 
 x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
@@ -24,7 +25,7 @@ conv_rate = [0,100,200]; %convergence rate variable. initialized with random val
 alpha = model.alpha; %step size
 iter = 1;
 idx = 1;
-z = 1;
+change_cost_crit = 1;%parameter used to check if the current solution should be kept or ignored.
 cost0 = -1;
     
 %% forward pass
@@ -41,7 +42,7 @@ while iter <= maxIte && criteria
 
         for i=1:horizon
 
-            if i <= model.q
+            if i < model.q
                 x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
                 z_new(:,i+1) = model.C*x_new(:,i+1);
                 Z_new(:,i) = zeros(model.nZ,1);
@@ -68,10 +69,15 @@ while iter <= maxIte && criteria
         cost_new = cost_new + 0.5*state_err'*QT*state_err;
 
         if iter > 1
-            z = (cost(iter - 1) - cost_new)/delta_j;
+            change_cost_crit = (cost_new - cost(iter - 1))/delta_J;
+            %delta_j helps to reach the solution that satisfies the
+            %Necessary conditions
+            %change_cost_crit = (cost_new - cost(iter - 1));
         end
 
-        if (z >= -0.6 || alpha < 10^-5)
+        if (change_cost_crit > 0.0 || alpha < 10^-7) %10^-5
+        %if (change_cost_crit <= 0 || alpha < 10^-5)
+            fprintf('change_cost_crit = %d\n', change_cost_crit);
             forward_flag = false;
             cost(iter) = cost_new;
             x_nom = x_new;
@@ -82,11 +88,11 @@ while iter <= maxIte && criteria
 
             vk(:,horizon+1) = QT*(state_err);
 
-            if alpha<0.005
-                alpha=0.005;
+            if alpha<0.000005
+                alpha=0.000005;
             end
         else
-            alpha = 0.99*alpha;
+            alpha = 0.99*alpha; %0.99
         end
 
     end
@@ -97,13 +103,14 @@ while iter <= maxIte && criteria
     state_err = compute_state_error(Z_nom(:,end), Zg, model.name);
 
     state_error_norm = norm(state_err);
-    [iter state_error_norm cost_new]
+    fprintf('iter = %d; state_error_norm=%d; cost=%d; lr=%d \n',iter,...
+                state_error_norm,cost_new, alpha);
     
     %% sysid - arma
     delta_u = model.ptb*1*randn(model.nu*(horizon+1),model.nSim);
     delta_x0 = model.statePtb*randn(model.nx,model.nSim);%zeros(model.nx,model.nSim);%
     delta_z = zeros(model.nz*(horizon+1),model.nSim);
-    delta_z(1:model.nz,:)=model.C*delta_x0;
+    delta_z(1:model.nz,:) = model.C*delta_x0;
 
     for sim_iter = 1:model.nSim
         x_temp = x0 + delta_x0(:,sim_iter);
@@ -124,7 +131,7 @@ while iter <= maxIte && criteria
     [At, Bt] = arma_fit(model, delta_u, delta_z);
 
     %% backward pass
-    delta_j=0;
+    delta_J=0;
 
     for i=horizon:-1:1
 
@@ -147,7 +154,7 @@ while iter <= maxIte && criteria
 
         kt(:,i) = - Kv(:,:,i)*vk(:,i+1) - Ku(:,:,i)*u_nom(:,i); 
         Qu = R*u_nom(:,i) + Bt(:,:,i)'*vk(:,i+1);  
-        delta_j = delta_j + (alpha*kt(:,i)'*Qu + alpha^2/2*kt(:,i)'*Quu(:,:,i)*kt(:,i));
+        delta_J = delta_J + (alpha*kt(:,i)'*Qu + alpha^2/2*kt(:,i)'*Quu(:,:,i)*kt(:,i));
     end
 
     if cost0 == -1

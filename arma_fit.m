@@ -37,19 +37,19 @@ for k = ID_time_idxs
     %building AA eq. 22
     
     
-    AA(1:nz,:,k) = [alpha, beta(:, nu+1:end)]; 
+    AA(1:nz,:,k-1) = [alpha, beta(:, nu+1:end)]; 
     
-    AA(nz + 1: q*nz, 1:(q-1)*nz, k) = eye((q-1)*nz);
+    AA(nz + 1: q*nz, 1:(q-1)*nz, k-1) = eye((q-1)*nz);
     
-    AA (q*nz + nu + 1:end, q*nz + 1:q*nz + (q-2)*nu,k) = eye((q-2)*nu);
+    AA (q*nz + nu + 1:end, q*nz + 1:q*nz + (q-2)*nu,k-1) = eye((q-2)*nu);
     
     %building BB eq. 22
     
     
     
-    BB(1:nz,:,k) = beta(:,1:nu);
+    BB(1:nz,:,k-1) = beta(:,1:nu);
     
-    BB(q*nz + 1:q*nz + nu,:,k) = eye(nu);
+    BB(q*nz + 1:q*nz + nu,:,k-1) = eye(nu);
     
 end
 
