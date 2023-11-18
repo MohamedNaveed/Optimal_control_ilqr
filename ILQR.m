@@ -7,13 +7,13 @@ function [x_nom, u_nom, cost] = ILQR(model, x0, xg, u_nom, horizon,...
 %QT = 100*eye(Model.nx);
 
 x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
-Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = QT;
-vk = zeros(model.nx,horizon+1);
-K = zeros(model.nu,model.nx,horizon);
+Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = QT; %CTG - hessian
+vk = zeros(model.nx,horizon+1);%CTG - jacobian
+K = zeros(model.nu,model.nx,horizon); %feedback gain for control acting on delta x
 Kv = zeros(model.nu,model.nx,horizon);
 Ku = zeros(model.nu,model.nu,horizon);
 Quu = zeros(model.nu,model.nu,horizon);
-kt  = zeros(model.nu,horizon);
+kt  = zeros(model.nu,horizon);% feedback gain for control constant term
 At = zeros(model.nx,model.nx,horizon);
 Bt = zeros(model.nx,model.nu,horizon);
 criteria = true;
@@ -22,7 +22,7 @@ conv_rate = [0,100,200]; %convergence rate variable. initialized with random val
 alpha = model.alpha; %step size
 iter = 1;
 idx = 1;
-z = 1;
+change_cost_crit = 1; %parameter used to check if the current solution should be kept or ignored.
 cost0 = -1;
     
 %% forward pass
@@ -37,17 +37,23 @@ while iter <= maxIte && criteria
 
         for i=1:horizon
 
-            state_err = compute_state_error(x_new(:,i), x_nom(:,i), model.name);
+            if i < model.q
+                x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
 
-            u_new(:,i) = u_nom(:,i) - K(:,:,i)*state_err + ...
-                                    alpha*kt(:,i);
+            else
 
-            state_err = compute_state_error(x_new(:,i), xg, model.name);
-
-            cost_new = cost_new + (0.5*state_err'*Q*state_err + ... 
-                                    0.5*u_new(:,i)'*R*u_new(:,i));
-
-            x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
+                state_err = compute_state_error(x_new(:,i), x_nom(:,i), model.name);
+    
+                u_new(:,i) = u_nom(:,i) - K(:,:,i)*state_err + ...
+                                        alpha*kt(:,i);
+                %fprintf("u_nom = %d; u_new = %d \n", u_nom(:,i), u_new(:,i));
+                state_err = compute_state_error(x_new(:,i), xg, model.name);
+    
+                cost_new = cost_new + (0.5*state_err'*Q*state_err + ... 
+                                        0.5*u_new(:,i)'*R*u_new(:,i));
+    
+                x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
+            end
         end
 
         state_err = compute_state_error(x_new(:,horizon+1), xg, model.name);
@@ -55,10 +61,16 @@ while iter <= maxIte && criteria
         cost_new = cost_new + 0.5*state_err'*QT*state_err;
 
         if iter > 1
-            z = (cost(iter - 1) - cost_new)/delta_j;
-        end
+            change_cost_crit = (cost_new - cost(iter - 1))/delta_J;
+            %delta_j helps to reach the solution that satisfies the
+            %Necessary conditions
 
-        if (z >= -0.6 || alpha < 10^-5)
+            %change_cost_crit = (cost_new - cost(iter - 1));
+        end
+        
+        if (change_cost_crit > 0.0 || alpha < 10^-5) %refer IROS2012 Todorov 
+        %if (change_cost_crit <= 0 || alpha < 10^-5)
+            fprintf('change_cost_crit = %d\n', change_cost_crit);   
             forward_flag = false;
             cost(iter) = cost_new;
             x_nom = x_new;
@@ -67,11 +79,12 @@ while iter <= maxIte && criteria
 
             vk(:,horizon+1) = QT*(state_err);
 
-            if alpha<0.005
-                alpha=0.005;
+            if alpha<0.0005
+                alpha=0.0005;
             end
         else
             alpha = 0.99*alpha;
+            %fprintf('alpha = %d \n', alpha);
         end
 
     end
@@ -82,10 +95,12 @@ while iter <= maxIte && criteria
     state_err = compute_state_error(x_nom(:,end), xg, model.name);
 
     state_error_norm = norm(state_err);
-    [iter state_error_norm cost_new]
+    fprintf('iter = %d; state_error_norm=%d; cost=%d; lr=%d \n',iter,...
+                state_error_norm,cost_new, alpha);
+    %[iter state_error_norm cost_new]
 
     %% backward pass
-    delta_j=0;
+    delta_J=0; %expected total cost reduction
 
     for i=horizon:-1:1
 
@@ -101,7 +116,7 @@ while iter <= maxIte && criteria
         end
 
         kpreinv = inv(Quu(:,:,i));
-        K(:,:,i) = kpreinv*Bt(:,:,i)'*Sk(:,:,i+1)*At(:,:,i);
+        K(:,:,i) = kpreinv*Bt(:,:,i)'*Sk(:,:,i+1)*At(:,:,i);%fb gain
         Kv(:,:,i) = kpreinv*Bt(:,:,i)';
         Ku(:,:,i) = kpreinv*R;
         Sk(:,:,i) = At(:,:,i)'*Sk(:,:,i+1)*(At(:,:,i)-Bt(:,:,i)*K(:,:,i)) + Q;
@@ -111,7 +126,7 @@ while iter <= maxIte && criteria
 
         kt(:,i) = - Kv(:,:,i)*vk(:,i+1) - Ku(:,:,i)*u_nom(:,i); 
         Qu = R*u_nom(:,i) + Bt(:,:,i)'*vk(:,i+1);  
-        delta_j = delta_j + (alpha*kt(:,i)'*Qu + alpha^2/2*kt(:,i)'*Quu(:,:,i)*kt(:,i));
+        delta_J = delta_J + (alpha*kt(:,i)'*Qu + alpha^2/2*kt(:,i)'*Quu(:,:,i)*kt(:,i));
     end
 
     if cost0 == -1

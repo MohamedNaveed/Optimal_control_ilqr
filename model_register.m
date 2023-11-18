@@ -39,8 +39,8 @@ elseif  strcmp(modelName, 'cartpole')
     model.Xg = [0;0;0*pi/180;0]; %x, xdot, theta(rad), thetadot(rad/s)
     model.X0 = [0;0;180*pi/180;0];% pole bottom is pi
     model.R = eye(model.nu);
-    model.Q = 0.1*eye(model.nx);
-    model.Qf = 100*eye(model.nx);
+    model.Q = 10*eye(model.nx);
+    model.Qf = 1000*eye(model.nx);
     [Ac, Bc] = cartpole_eqs(model);
     model.Ac = Ac; % continuous time linearised model (symbolic)
     model.Bc = Bc;
