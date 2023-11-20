@@ -107,11 +107,16 @@ while iter <= maxIte && criteria
                 state_error_norm,cost_new, alpha);
     
     %% sysid - arma
-    delta_u = model.ptb*1*randn(model.nu*(horizon+1),model.nSim);
+    %delta_u = model.ptb*1*randn(model.nu*(horizon+1),model.nSim);
+    %{
+    mean = zeros(1,model.nu*(horizon));
+    Sigma = model.ptb*diag(abs(u_nom));
+    delta_u = mvnrnd(mean, Sigma, model.nSim);
+    delta_u = delta_u';
     delta_x0 = model.statePtb*randn(model.nx,model.nSim);%zeros(model.nx,model.nSim);%
     delta_z = zeros(model.nz*(horizon+1),model.nSim);
     delta_z(1:model.nz,:) = model.C*delta_x0;
-
+    
     for sim_iter = 1:model.nSim
         x_temp = x0 + delta_x0(:,sim_iter);
         
@@ -119,7 +124,7 @@ while iter <= maxIte && criteria
             
             u_temp = u_nom(:,t_step) + delta_u((t_step-1)*model.nu + 1: ...
                                             t_step*model.nu, sim_iter);
-            x_temp = model.state_prop(t_step, x_temp, u_temp, model);
+            x_temp = model.state_prop(t_step, x_temp, u_temp, model); %x_nom/x_temp
             z_temp = model.C*x_temp';
             delta_z(t_step*model.nz + 1: (t_step+1)*model.nz,sim_iter) =...
                                         z_temp - z_nom(:,t_step+1);
@@ -127,9 +132,9 @@ while iter <= maxIte && criteria
         end
 
     end
-
-    [At, Bt] = arma_fit(model, delta_u, delta_z);
-
+    %}
+    %[At, Bt] = arma_fit(model, delta_u, delta_z, x_nom, u_nom);
+    [At, Bt] = arma_fit(model, x_nom, u_nom);
     %% backward pass
     delta_J=0;
 
@@ -173,7 +178,7 @@ while iter <= maxIte && criteria
     %rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
     cost_change = sum(conv_rate);
 
-    if ((abs(cost_change) < 0.001) || iter == maxIte)
+    if ((abs(cost_change) < 0.00001) || iter == maxIte)
         criteria = false;
         %disp('converged');
 

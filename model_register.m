@@ -59,7 +59,7 @@ elseif  strcmp(modelName, 'cartpole')
     model.CC = [eye(model.nz), zeros(model.nz, model.nZ - model.nz)];%information state system C
     model.horizon = 30; %time horizon of the finite-horizon OCP
     model.nSim = 500;
-    model.ptb = 0.01;
+    model.ptb = 0.0001;
     model.statePtb = 0.001;
 
 elseif strcmp(modelName, '1dcos')
