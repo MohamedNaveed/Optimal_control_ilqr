@@ -10,8 +10,8 @@ fprintf('final state = %d \n', model.Xg);
 fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 
-%load('cartpole_output_T30.mat');
-load('podilqr_cartpole_output_T30.mat');
+load('cartpole_output_T30.mat');
+%load('podilqr_cartpole_output_T30_1.mat');
 u_guess = u_nom;
 %u_guess = zeros(model.nu, model.horizon);
 %u_guess(:,1) = u_nom(:,1);
