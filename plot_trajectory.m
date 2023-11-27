@@ -75,8 +75,8 @@ elseif strcmp(modelName, 'cartpole')
     ylabel('u');
     xlabel('Time steps');
     
-    ax = gca; % current axes
-    ax.FontSize = font_size;
+    ax = findobj(gcf,'type','axes'); % current axes
+    set(ax, 'FontSize', font_size);
    
     
     if SAVE_PLOT
