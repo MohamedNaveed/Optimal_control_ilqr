@@ -11,14 +11,14 @@ fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 
 problem = 'full state'; % 'full state' | 'output' %type of cost
-maxIte = 100;
+maxIte = 500;
 
 % open loop ilqr
 if strcmp(problem,'output')
     
     load('cartpole_output_T30.mat');
     %load('podilqr_cartpole_output_T30_1.mat');
-    u_guess = u_nom;
+    %u_guess = u_nom;
     %u_guess = zeros(model.nu, model.horizon);
     %u_guess(:,1) = u_nom(:,1);
     model.Q = 10*eye(model.nz);  % cost only on outputs
@@ -32,9 +32,10 @@ if strcmp(problem,'output')
 
 else
     model.q = 1;
-    %load('cartpole_full_state_T30.mat');
-    u_guess = zeros(model.nu, model.horizon);
-    %u_guess = u_nom;
+    load('sqp_sol.mat');
+    %load('cartpole_full_state_T30_feb1.mat');
+    %u_guess = zeros(model.nu, model.horizon);
+    u_guess = u_nom;
     [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
                             model.Q, model.R, model.Qf, maxIte); %trajectory optimization using iLQR.
 end
