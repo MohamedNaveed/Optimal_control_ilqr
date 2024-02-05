@@ -50,7 +50,7 @@ while iter <= maxIte && criteria
                 state_err = compute_state_error(x_new(:,i), xg, model.name);
     
                 cost_new = cost_new + (0.5*state_err'*Q*state_err + ... 
-                                        0.5*u_new(:,i)'*R*u_new(:,i));
+                                        0.5*u_new(:,i)'*R*u_new(:,i))*model.dt;
     
                 x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
             end
@@ -67,8 +67,8 @@ while iter <= maxIte && criteria
 
             %change_cost_crit = (cost_new - cost(iter - 1));
         end
-        
-        if (change_cost_crit > 0.0 || alpha < 10^-5) %refer IROS2012 Todorov 
+        %if (change_cost_crit > 0.0 || alpha < 10^-5)
+        if (change_cost_crit > 0.0) %refer IROS2012 Todorov 
         %if (change_cost_crit <= 0 || alpha < 10^-5)
             fprintf('change_cost_crit = %d\n', change_cost_crit);   
             forward_flag = false;
@@ -79,9 +79,9 @@ while iter <= maxIte && criteria
 
             vk(:,horizon+1) = QT*(state_err);
 
-            if alpha<0.0005
-                alpha=0.0005;
-            end
+            %if alpha < e-14
+            %    alpha=0.00000005;
+            %end
         else
             alpha = 0.99*alpha;
             %fprintf('alpha = %d \n', alpha);
@@ -145,7 +145,8 @@ while iter <= maxIte && criteria
     %rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
     cost_change = sum(conv_rate);
 
-    if ((abs(cost_change) < 0.001) || iter == maxIte)
+    %if ((abs(cost_change) < 0.00001) || iter == maxIte)
+    if (iter == maxIte)
         criteria = false;
         %disp('converged');
 

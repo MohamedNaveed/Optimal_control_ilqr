@@ -1,28 +1,23 @@
-function [] = test_cartpole(model, X0)
+clear;clc;
 
-T = 20;
-X = zeros(model.nx, T+1);
-X(:,1) = X0;
+model = model_register('cartpole');
+model.name
+fprintf('initial state = %d \n', model.X0);
+fprintf('final state = %d \n', model.Xg);
+load('cartpole_full_state_T30_feb1.mat')
+
+T = model.horizon;
+X_ode45= zeros(model.nx, T+1);
+X_ode45(:,1) = model.X0;
+
+X_euler= zeros(model.nx, T+1);
+X_euler(:,1) = model.X0;
 
 for i = 1:T
-    U = 0;
-    X(:,i+1) = cartpole_nl_state_prop(i, X(:,i), U, model);
+    X_ode45(:,i+1) = cartpole_nl_state_prop(i, X_ode45(:,i), u_nom(:,i), model,'ode45');
+
+    X_euler(:,i+1) = cartpole_nl_state_prop(i, X_euler(:,i), u_nom(:,i), model);
 end
 
 %% plotting
-timesteps = 0:T;
-figure(1);
-subplot(2,2,1);
-plot(timesteps, X(1,:));
-ylabel('x');
-subplot(2,2,2);
-plot(timesteps, X(2,:));
-ylabel('xdot');
-subplot(2,2,3);
-plot(timesteps, X(3,:));
-ylabel('theta');
-subplot(2,2,4);
-plot(timesteps, X(4,:));
-ylabel('thetadot');
-end
-
+plot_trajectory(X_ode45-X_euler, u_nom, model.horizon,0,model.name,model.dt);
