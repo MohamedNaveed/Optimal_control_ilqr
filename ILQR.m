@@ -50,7 +50,7 @@ while iter <= maxIte && criteria
                 state_err = compute_state_error(x_new(:,i), xg, model.name);
     
                 cost_new = cost_new + (0.5*state_err'*Q*state_err + ... 
-                                        0.5*u_new(:,i)'*R*u_new(:,i))*model.dt;
+                                        0.5*u_new(:,i)'*R*u_new(:,i));
     
                 x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
             end
