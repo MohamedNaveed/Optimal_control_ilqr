@@ -2,9 +2,6 @@ function [x_nom, u_nom, cost] = ILQR(model, x0, xg, u_nom, horizon,...
                     Q, R, QT, maxIte)
 
 %% variables
-%R = 2*10^0 * eye(Model.nu);
-%Q = eye(Model.nx);
-%QT = 100*eye(Model.nx);
 
 x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
 Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = QT; %CTG - hessian
@@ -67,10 +64,11 @@ while iter <= maxIte && criteria
 
             %change_cost_crit = (cost_new - cost(iter - 1));
         end
-        %if (change_cost_crit > 0.0 || alpha < 10^-5)
-        if (change_cost_crit > 0.0) %refer IROS2012 Todorov 
+
+        if (change_cost_crit > 0.0 || alpha < 10^-5)
+        %if (change_cost_crit > 0.0) %refer IROS2012 Todorov 
         %if (change_cost_crit <= 0 || alpha < 10^-5)
-            fprintf('change_cost_crit = %d\n', change_cost_crit);   
+            %fprintf('change_cost_crit = %d\n', change_cost_crit);   
             forward_flag = false;
             cost(iter) = cost_new;
             x_nom = x_new;
@@ -95,8 +93,8 @@ while iter <= maxIte && criteria
     state_err = compute_state_error(x_nom(:,end), xg, model.name);
 
     state_error_norm = norm(state_err);
-    fprintf('iter = %d; state_error_norm=%d; cost=%d; lr=%d \n',iter,...
-                state_error_norm,cost_new, alpha);
+    %fprintf('iter = %d; state_error_norm=%d; cost=%d; lr=%d \n',iter,...
+    %            state_error_norm,cost_new, alpha);
     %[iter state_error_norm cost_new]
 
     %% backward pass
@@ -145,8 +143,8 @@ while iter <= maxIte && criteria
     %rate_conv_diff = abs(conv_rate(1) - conv_rate(2)) + abs(conv_rate(2) - conv_rate(3));
     cost_change = sum(conv_rate);
 
-    %if ((abs(cost_change) < 0.00001) || iter == maxIte)
-    if (iter == maxIte)
+    if ((abs(cost_change) < 0.0001) || iter == maxIte)
+    %if (iter == maxIte)
         criteria = false;
         %disp('converged');
 

@@ -78,6 +78,6 @@ elseif strcmp(modelName, '1dcos')
     model.R = 1*model.dt;
     model.Q = 100*model.dt;
     model.Qf = 500;
-    
+    model.q = 1;
 end
 

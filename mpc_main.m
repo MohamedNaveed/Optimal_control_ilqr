@@ -23,7 +23,7 @@ maxIte = 200;
 %% MPC using ilqr solver
 
 %
-load('u_guess_1dcos_T150.mat');
+load('data/u_guess_1dcos_T200.mat');
 %u_guess = zeros(model.nu, model.horizon);
 %u_nom = u_guess
 cost_mpc = 0;
@@ -32,13 +32,13 @@ x_mpc = zeros(model.nx, model.horizon+1);
 x_mpc(:,1) = model.X0;
 
 u_mpc = zeros(model.nu, model.horizon);
-epsilon = 0.0;
+epsilon = 0.1;
 
 maxIte = 100;
-
+tic;
 for t = 0:model.horizon-1
     
-    fprintf('t= %d \n',t);
+    %fprintf('t= %d \n',t);
     T = model.horizon - t;
     
     u_guess = u_nom(:,end-T+1:end);
@@ -56,10 +56,10 @@ for t = 0:model.horizon-1
     x_mpc(:,t+2) = model.state_prop(t+1, x_mpc(:,t+1), u_mpc(:,t+1), model, epsilon); % state propagate.
  
 end
-
+time_taken = toc;
 state_err = compute_state_error(x_mpc(:,model.horizon+1), model.Xg, model.name);
 cost_mpc = cost_mpc + (0.5*state_err'*model.Qf*state_err); %terminal cost
-
+fprintf('Time taken %d \n', time_taken);
 
 %% 
 plot_trajectory(x_mpc, u_mpc, model.horizon,0,model.name,model.dt);
