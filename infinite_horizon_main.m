@@ -1,7 +1,7 @@
 %% Infinite horizon main
 clear;clc;
 %load('pendulum_init_guess_T10_U.mat');
-load('cartpole_init_guess_T10.mat');
+load('data/cartpole_init_guess_T10.mat');
 SAVE_file = false;
 model = model_register('cartpole');
 model.name
