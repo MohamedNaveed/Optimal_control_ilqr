@@ -15,7 +15,7 @@ cost_mpc = 0;
 
 for t = 0:model.horizon-1
     
-    fprintf('t= %d \n',t);
+    %fprintf('t= %d \n',t);
     T = model.horizon - t;
     
     u_guess = u_nom(:,end-T+1:end);

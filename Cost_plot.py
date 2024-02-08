@@ -25,7 +25,8 @@ if __name__=='__main__':
 
     if PLOT_MPC:
         
-        filename_mpc = "/home/naveed/Documents/Optimal_control_ilqr/stochastic_hjb_1dcos_T300000_X200_exp_hjb_cost.csv"
+        filename_mpc = "/home/naveed/Documents/Optimal_control_ilqr/data/stochastic_hjb_1dcos_T300000_X200_exp_hjb_cost.csv"
+        #filename_mpc = "/home/naveed/Documents/Optimal_control_ilqr/data/mpc_1dcos_e0_1_T200_iters500.csv"
         file_mpc = open(filename_mpc,"r")
 
         lines = file_mpc.read().splitlines()
@@ -52,7 +53,7 @@ if __name__=='__main__':
     
     if PLOT_DP:
         
-        filename_dp = "/home/naveed/Documents/Optimal_control_ilqr/stochastic_hjb_1dcos_T300000_X200_processNoise_e0_10.csv"
+        filename_dp = "/home/naveed/Documents/Optimal_control_ilqr/data/stochastic_hjb_1dcos_T300000_X200_processNoise_e0_10_feb6_iters500.csv"
         #filename_dp = "/home/naveed/Documents/Optimal_control_ilqr/dp_lqp_e0_2.csv"
         file_dp = open(filename_dp,"r")
 
@@ -100,6 +101,7 @@ if __name__=='__main__':
 
     if PLOT_DP and PLOT_MPC:
         legend = pylab.legend([r"Actual", r"Expected"],loc=2)
+        #legend = pylab.legend([r"HJB-FD", r"MPC-SH"],loc=2)
 
     if PLOT_DP:
         # pylab.fill_between(epsilon_dp[Noise_level[0]:Noise_level[1]+1],
@@ -115,15 +117,16 @@ if __name__=='__main__':
                         alpha=0.25,linewidth=0,color='b')
 
     pylab.ylim(-25,1000)
-    pylab.xlim(-0.01,1.0)
+    pylab.xlim(-0.01,1)
 
     pylab.xlabel(r'epsilon')
     pylab.ylabel(r'Cost-to-go')
+    #pylab.ylabel(r'Cost incurred ($J$)')
     #pylab.ylabel(r'$J/\bar{J}$')
     #pylab.title('Cost vs error percentage for 3 agent(s) ')
 
     pylab.savefig('/home/naveed/Documents/Optimal_control_ilqr/'+ \
-                  'cost_expected_vs_actual_stochastic_hjb_1dcos.pdf', format='pdf',bbox_inches='tight',pad_inches = 0.02) #1- dp, 2- dp replan, 3 - MPC, 4 - MPC_fast
+                  'cost_expected_vs_actual_stochastic_hjb_1dcos_iters500.pdf', format='pdf',bbox_inches='tight',pad_inches = 0.02) #1- dp, 2- dp replan, 3 - MPC, 4 - MPC_fast
 
     if PLOT_MPC:
         file_mpc.close()

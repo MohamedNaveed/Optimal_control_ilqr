@@ -1,23 +1,28 @@
 %% Infinite horizon main
 clear;clc;
 %load('pendulum_init_guess_T10_U.mat');
-load('data/cartpole_init_guess_T10.mat');
+%load('data/cartpole_init_guess_T10.mat');
 SAVE_file = false;
 model = model_register('cartpole');
 model.name
 disp('initial state');
 model.X0
-u_guess_from_file = u_nom;
+model.q = 1; %for fully observed. 
+if exist('u_nom', 'var')
+    u_guess_from_file = u_nom;
+else
+    u_guess_from_file = 0;
+end
 %test_cartpole(model, model.Xg);
 
 %% Terminal controller 
 
 [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 total_time = 150;
-maxIte = 25;
+maxIte = 100;
 
 %% iterate over every T
-T_list = 10;
+T_list = 20;
 
 cost_ilqr = zeros(1,length(T_list));
 total_cost = zeros(1,length(T_list));
@@ -61,7 +66,9 @@ cost_timestep = calc_cost(x_nom, u_nom, model.Xg, T, Q_ilqr, R_ilqr, Q_T, model.
 plot_trajectory(x_nom, u_nom, T, 0, model.name);
 figure;
 semilogy(1:length(cost),cost,'LineWidth',2);
-
+xlabel('ILQR Iterations')
+ylabel('Cost')
+title('Cost vs iterations')
 %% Cost to go estimated
 state_err = compute_state_error(x_nom(:,T+1), model.Xg, model.name);
 

@@ -65,7 +65,7 @@ while iter <= maxIte && criteria
             %change_cost_crit = (cost_new - cost(iter - 1));
         end
 
-        if (change_cost_crit > 0.0 || alpha < 10^-5)
+        if (change_cost_crit > 0.0 || alpha < 10^-8)
         %if (change_cost_crit > 0.0) %refer IROS2012 Todorov 
         %if (change_cost_crit <= 0 || alpha < 10^-5)
             %fprintf('change_cost_crit = %d\n', change_cost_crit);   
@@ -93,8 +93,8 @@ while iter <= maxIte && criteria
     state_err = compute_state_error(x_nom(:,end), xg, model.name);
 
     state_error_norm = norm(state_err);
-    %fprintf('iter = %d; state_error_norm=%d; cost=%d; lr=%d \n',iter,...
-    %            state_error_norm,cost_new, alpha);
+    fprintf('it = %d; cost_crit = %d; state_error=%d; cost=%d; lr=%d \n',iter,...
+                change_cost_crit, state_error_norm,cost_new, alpha);
     %[iter state_error_norm cost_new]
 
     %% backward pass

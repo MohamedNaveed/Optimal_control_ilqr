@@ -6,7 +6,7 @@ end
 
 T = horizon + T_term;
 font_size = 14;
-SAVE_PLOT = false;
+SAVE_PLOT = true;
 
 %% plot traj
 if strcmp(modelName, 'pendulum')
@@ -91,11 +91,26 @@ elseif strcmp(modelName, 'cartpole')
     end
 
 elseif strcmp(modelName,'1dcos')
-    figure;
+    fig = figure;
     timesteps = (0:T)*modeldt;
     plot(timesteps, x_nom,'LineWidth',2);
     ylabel('state');
-    xlabel('Time steps');
+    xlabel('time');
+    grid on;
+    
+    if SAVE_PLOT
+        font_size = 16;
+        ax = gca;
+        ax.FontSize = font_size; 
+        %set(h,'FontSize',font_size);
+        set(fig,'Units','inches');
+        screenposition = get(fig,'Position');
+        set(fig,...
+            'PaperPosition',[0 0 screenposition(3:4)],...
+            'PaperSize',[screenposition(3:4)]);
+        
+        print -dpdf -vector 'mpc_ilqr_traj_epsi8.pdf'
+    end
 
     figure;
     plot(timesteps(1:T), u_nom, 'LineWidth',2);

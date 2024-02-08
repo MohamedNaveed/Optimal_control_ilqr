@@ -16,7 +16,7 @@ output_filename = 'mpc_1dcos_e02_04_T200.csv';
 header = ["epsilon", "Average Cost", "Cost variance", "Time taken"];
 writematrix(header,output_filename,'WriteMode','append');
 
-epsi_range = [0];
+epsi_range = [1.4,1.6,1.8,2.0,4.0,6.0,8.0,10.0];
 
 n_mc_runs = 500;
 
