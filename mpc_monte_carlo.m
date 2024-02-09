@@ -2,7 +2,8 @@
 
 clear;clc;
 
-model = model_register('1dcos');
+model = model_register('cartpole');
+model.q = 1; %full state
 model.name
 fprintf('initial state = %d \n', model.X0);
 fprintf('final state = %d \n', model.Xg);
@@ -12,11 +13,11 @@ fprintf('dt = %d \n', model.dt);
 
 SAVE_MAT_FILE = false;
 WRITE_CSVFILE = false; 
-output_filename = 'mpc_1dcos_e02_04_T200.csv';
+output_filename = 'mpc_cartpole_e01_02_T30.csv';
 header = ["epsilon", "Average Cost", "Cost variance", "Time taken"];
 writematrix(header,output_filename,'WriteMode','append');
 
-epsi_range = [1.4,1.6,1.8,2.0,4.0,6.0,8.0,10.0];
+epsi_range = [0.01,0.02];
 
 n_mc_runs = 500;
 
