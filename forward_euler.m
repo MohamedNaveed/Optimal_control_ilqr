@@ -1,14 +1,9 @@
-function [temp, x_out] = forward_euler(t, x, u, model)
+function [x_out] = forward_euler(t, x, u, model)
 
-for i =1:1
-    temp = x;
+
+for j = 1:100
     
-    for j = 1:100
-        
-        temp = temp + cartpole_nl_ode(i, temp, u(i), model)*model.dt/100; 
-    end
-
-    x = temp;
+    x = x + model.nl_ode(t, x, u, model)*model.dt/100; 
 end
 
 x_out = x;

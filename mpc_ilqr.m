@@ -1,11 +1,12 @@
 function [cost_mpc] = mpc_ilqr(model, epsilon)
-
+%{
 if model.horizon == 150
     load('data/u_guess_1dcos_T150.mat');
 elseif model.horizon == 200
     load('data/u_guess_1dcos_T200.mat');
 end
-    
+%}
+load('data/cartpole_init_guess_T30.mat');
 x_mpc = zeros(model.nx, model.horizon+1);
 x_mpc(:,1) = model.X0;
 

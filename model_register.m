@@ -30,7 +30,7 @@ elseif  strcmp(modelName, 'cartpole')
     model.M = 1;
     model.m = 0.01;
     model.L = 0.6;
-    model.u_max = 1;
+    model.u_max = 7;
     model.dt = 0.1;
     model.nx = 4;
     model.nu = 1;
@@ -39,11 +39,12 @@ elseif  strcmp(modelName, 'cartpole')
     model.Xg = [0;0;0*pi/180;0]; %x, xdot, theta(rad), thetadot(rad/s)
     model.X0 = [0;0;180*pi/180;0];% pole bottom is pi
     model.R = 1*eye(model.nu);
-    model.Q = 0.1*eye(model.nx);
+    model.Q = 10*eye(model.nx);
     model.Qf = 1000*eye(model.nx);
     %[Ac, Bc] = cartpole_eqs(model);
     %model.Ac = Ac; % continuous time linearised model (symbolic)
     %model.Bc = Bc;
+    model.nl_ode = @cartpole_nl_ode;
     model.state_prop = @cartpole_nl_state_prop;
     model.cal_A_B = @cartpole_A_B;
     % model around the equilibrium at the upright
@@ -55,6 +56,41 @@ elseif  strcmp(modelName, 'cartpole')
     
     model.nz = 2; %number of outputs
     model.q = 2; %value of q required for ARMA model.
+    model.nZ = model.q*model.nz + (model.q-1)*model.nu; %information-state dimension
+    model.CC = [eye(model.nz), zeros(model.nz, model.nZ - model.nz)];%information state system C
+    model.horizon = 30; %time horizon of the finite-horizon OCP
+    model.nSim = 500;
+    model.ptb = 0.0001;
+    model.statePtb = 0.001;
+
+elseif  strcmp(modelName, 'car')
+    model.name = 'car';
+    model.L = 0.58; %length of the car
+    model.u_max = 7;
+    model.dt = 0.1;
+    model.nx = 4; %[x,y,theta,phi]
+    model.nu = 2; %[v,omega]
+    model.alpha = 1;
+    model.Xg = [1;4;pi/2;0]; %[x,y,theta (rad),phi(rad)]
+    model.X0 = [0;0;pi/3;0];% 
+    model.R = 1*eye(model.nu);
+    model.Q = 5*eye(model.nx);
+    model.Qf = 1000*eye(model.nx);
+    %[Ac, Bc] = cartpole_eqs(model);
+    %model.Ac = Ac; % continuous time linearised model (symbolic)
+    %model.Bc = Bc;
+    model.nl_ode = @car_nl_ode;
+    model.state_prop = @car_nl_state_prop;
+    model.cal_A_B = @car_A_B;
+    % model around the equilibrium at the upright
+    U_term = [0;0];
+    [A, B] = car_A_B(model, model.Xg, U_term);
+    model.A = A;
+    model.B = B;
+    model.C = [1 0 0 0; 0 0 1 0];
+    
+    model.nz = 2; %number of outputs
+    model.q = 1; %value of q required for ARMA model.
     model.nZ = model.q*model.nz + (model.q-1)*model.nu; %information-state dimension
     model.CC = [eye(model.nz), zeros(model.nz, model.nZ - model.nz)];%information state system C
     model.horizon = 30; %time horizon of the finite-horizon OCP
