@@ -2,7 +2,7 @@
 
 clear;clc;
 
-model = model_register('car');
+model = model_register('cartpole');
 model.name
 model.q = 1; %full state
 fprintf('initial state = %f \n', model.X0);
@@ -32,11 +32,13 @@ maxIte = 100;
 x_mpc = zeros(model.nx, model.horizon+1);
 u_mpc = zeros(model.nu, model.horizon);
 x_mpc(:,1) = model.X0;
-load('data/car_u_guess_T30.mat');
+%load('data/car_u_guess_T30.mat');
+load('data/cartpole_init_guess_T30.mat')
 %u_guess = zeros(model.nu, model.horizon);
 %u_nom = u_guess
 cost_mpc = 0;
-
+K = zeros(model.nu,model.nx,model.horizon);
+x_nom = zeros(model.nx,model.horizon);
 tic;
 for t = 0:model.horizon-1
     
@@ -45,8 +47,8 @@ for t = 0:model.horizon-1
     
     u_guess = u_nom(:,end-T+1:end);
     
-    [x_nom, u_nom, cost] = ILQR(model, x_mpc(:,t+1), model.Xg, u_guess, T,...
-                            model.Q, model.R, model.Qf, maxIte); %trajectory optimization using iLQR.
+    [x_nom, u_nom, cost, K] = ILQR(model, x_mpc(:,t+1), model.Xg, u_guess, T,...
+                            model.Q, model.R, model.Qf, maxIte, K, x_nom);%trajectory optimization using iLQR.
     
     u_mpc(:,t+1) = u_nom(:,1);
     

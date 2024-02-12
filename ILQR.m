@@ -1,12 +1,12 @@
-function [x_nom, u_nom, cost] = ILQR(model, x0, xg, u_nom, horizon,...
-                    Q, R, QT, maxIte)
+function [x_nom, u_nom, cost, K] = ILQR(model, x0, xg, u_nom, horizon,...
+                    Q, R, QT, maxIte, K, x_nom)
 
 %% variables
 
-x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
+%x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
 Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = QT; %CTG - hessian
 vk = zeros(model.nx,horizon+1);%CTG - jacobian
-K = zeros(model.nu,model.nx,horizon); %feedback gain for control acting on delta x
+%K = zeros(model.nu,model.nx,horizon); %feedback gain for control acting on delta x
 Kv = zeros(model.nu,model.nx,horizon);
 Ku = zeros(model.nu,model.nu,horizon);
 Quu = zeros(model.nu,model.nu,horizon);
@@ -65,7 +65,7 @@ while iter <= maxIte && criteria
             %change_cost_crit = (cost_new - cost(iter - 1));
         end
 
-        if (change_cost_crit > 0.0 || alpha < 10^-8)
+        if (change_cost_crit > 0.0 || alpha < 10^-6)
         %if (change_cost_crit > 0.0) %refer IROS2012 Todorov 
         %if (change_cost_crit <= 0 || alpha < 10^-5)
             %fprintf('change_cost_crit = %d\n', change_cost_crit);   

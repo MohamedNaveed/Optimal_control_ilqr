@@ -2,7 +2,7 @@
 
 clear;clc;
 
-model = model_register('car');
+model = model_register('cartpole');
 model.name
 fprintf('initial state = %d \n', model.X0);
 fprintf('final state = %d \n', model.Xg);
@@ -33,9 +33,9 @@ if strcmp(problem,'output')
 else
     model.q = 1;
     %load('sqp_sol.mat');
-    %load('cartpole_full_state_T30_feb1.mat');
-    u_guess = zeros(model.nu, model.horizon);
-    %u_guess = u_nom;
+    load('data/cartpole_init_guess_T30.mat');
+    %u_guess = zeros(model.nu, model.horizon);
+    u_guess = u_nom;
     [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
                             model.Q, model.R, model.Qf, maxIte); %trajectory optimization using iLQR.
 end
