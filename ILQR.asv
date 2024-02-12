@@ -65,7 +65,7 @@ while iter <= maxIte && criteria
             %change_cost_crit = (cost_new - cost(iter - 1));
         end
 
-        if (change_cost_crit > 0.0 || alpha < 10^-8)
+        if (change_cost_crit > 0.0 || alpha < 10^-6)
         %if (change_cost_crit > 0.0) %refer IROS2012 Todorov 
         %if (change_cost_crit <= 0 || alpha < 10^-5)
             %fprintf('change_cost_crit = %d\n', change_cost_crit);   
