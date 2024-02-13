@@ -2,7 +2,7 @@
 
 clear;clc;
 
-model = model_register('car');
+model = model_register('cartpole');
 model.q = 1; %full state
 model.name
 fprintf('initial state = %d \n', model.X0);
@@ -13,13 +13,13 @@ fprintf('dt = %d \n', model.dt);
 
 SAVE_MAT_FILE = false;
 WRITE_CSVFILE = false; 
-output_filename = 'mpc_car_e001_02_T30.csv';
+output_filename = 'test.csv';
 header = ["epsilon", "Average Cost", "Cost variance", "Time taken"];
 writematrix(header,output_filename,'WriteMode','append');
 
-epsi_range = [0.01,0.02,0.03,0.04,0.05,0.1,0.2];
+epsi_range = [0.01];
 
-n_mc_runs = 500;
+n_mc_runs = 1;
 
 cost_vec = zeros(length(epsi_range),1);
 var_vec = zeros(length(epsi_range),1);
@@ -38,6 +38,7 @@ for it = 1:length(epsi_range)
     end
  
     time_taken = toc;
+    cost_vec_mc = rmoutliers(cost_vec_mc);
     cost_vec(it) = mean(cost_vec_mc);
     var_vec(it) = var(cost_vec_mc);
 

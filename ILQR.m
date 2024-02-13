@@ -1,12 +1,12 @@
 function [x_nom, u_nom, cost, K] = ILQR(model, x0, xg, u_nom, horizon,...
-                    Q, R, QT, maxIte, K, x_nom)
+                    Q, R, QT, maxIte)
 
 %% variables
 
-%x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
+x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
 Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = QT; %CTG - hessian
 vk = zeros(model.nx,horizon+1);%CTG - jacobian
-%K = zeros(model.nu,model.nx,horizon); %feedback gain for control acting on delta x
+K = zeros(model.nu,model.nx,horizon); %feedback gain for control acting on delta x
 Kv = zeros(model.nu,model.nx,horizon);
 Ku = zeros(model.nu,model.nu,horizon);
 Quu = zeros(model.nu,model.nu,horizon);

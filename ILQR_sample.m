@@ -33,7 +33,11 @@ if strcmp(problem,'output')
 else
     model.q = 1;
     %load('sqp_sol.mat');
-    load('data/cartpole_init_guess_T30.mat');
+    if strcmp(model.name,'cartpole')
+        load('data/cartpole_init_guess_T30.mat');
+    elseif strcmp(model.name,'car')
+        load('data/car_u_guess_T30.mat')
+    end
     %u_guess = zeros(model.nu, model.horizon);
     u_guess = u_nom;
     [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...

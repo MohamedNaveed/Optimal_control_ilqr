@@ -24,23 +24,20 @@ for t = 0:model.horizon-1
     T = model.horizon - t;
     
     % finding a better initial guess using the linear feedback
+    u_guess = u_nom(:,end-T+1:end);
+    
     if t > 0
-        x_tpfc = zeros(model.nx, model.horizon-t+1);
-        u_tpfc = zeros(model.nu, model.horizon-t);
+        x_tpfc = zeros(model.nx, model.horizon-t);
         x_tpfc(:,1) = x_mpc(:,t+1);
-          
+
         for j = 1:model.horizon-t
         
             state_err = compute_state_error(x_tpfc(:,j), x_nom(:,j+1), model.name);
             u_tpfc(:,j) = u_nom(:,j+1) - K(:,:,j+1)*state_err ;
                                         
-            x_tpfc(:,j+1) = model.state_prop(t, x_tpfc(:,j), u_tpfc(:,j), model); % state propagate.
+            x_tpfc(:,t+1) = model.state_prop(t, x_tpfc(:,t), u_tpfc(:,j), model, epsilon); % state propagate.
      
         end
-
-        u_guess = u_tpfc;
-    else
-        u_guess = u_nom;
     end
     
     [x_nom, u_nom, cost, K] = ILQR(model, x_mpc(:,t+1), model.Xg, u_guess, T,...
