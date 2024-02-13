@@ -4,7 +4,9 @@ function [state_n] = cartpole_nl_state_prop(t, state, U, model, epsilon, varargi
 if ~exist('epsilon','var')
     w = zeros(model.nx,1);
 else
-    w = epsilon*model.u_max*sqrt(model.dt)*normrnd(0,1);
+    mu = zeros(model.nx,1);
+    w = epsilon*sqrt(model.dt)*mvnrnd(mu, model.Cov);
+    w = reshape(w, [model.nx,1]);
 end
 
 if (~isempty(varargin)) && (strcmp(varargin{1}, 'ode45'))

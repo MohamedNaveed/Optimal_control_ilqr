@@ -34,6 +34,7 @@ elseif  strcmp(modelName, 'cartpole')
     model.dt = 0.1;
     model.nx = 4;
     model.nu = 1;
+    model.Cov = diag([0.4321,2.8743,3.6426,1.5945]); %noise covariance. 
     model.g = 9.81;
     model.alpha = 1;
     model.Xg = [0;0;0*pi/180;0]; %x, xdot, theta(rad), thetadot(rad/s)
