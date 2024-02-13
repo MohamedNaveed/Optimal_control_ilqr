@@ -13,19 +13,23 @@ fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 
 WRITE_CSVFILE = false; 
-output_filename = 'tpfc_cartpole_e001_02_T30.csv';
+output_filename = 'test.csv';
 header = ["epsilon", "Average Cost", "Cost variance", "Time taken"];
 writematrix(header,output_filename,'WriteMode','append');
 
-epsi_range = [0.023,0.024];
+epsi_range = [0.01];
 
-n_mc_runs = 500;
+n_mc_runs = 1;
 
 cost_vec = zeros(length(epsi_range),1);
 var_vec = zeros(length(epsi_range),1);
 
-load('data/cartpole_init_guess_T30.mat');
-maxIte = 100;
+if strcmp(model.name,'cartpole')
+        load('data/cartpole_init_guess_T30_dt_01.mat');
+elseif strcmp(model.name,'car')
+    load('data/car_u_guess_T30.mat')
+end
+maxIte = 500;
 u_guess = u_nom;
 
 [x_nom, u_nom, cost, K] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
@@ -43,6 +47,7 @@ for it = 1:length(epsi_range)
     end
  
     time_taken = toc;
+    cost_vec_mc = rmoutliers(cost_vec_mc);
     cost_vec(it) = mean(cost_vec_mc);
     var_vec(it) = var(cost_vec_mc);
 
