@@ -14,9 +14,9 @@ X_euler= zeros(model.nx, T+1);
 X_euler(:,1) = model.X0;
 
 for i = 1:T
-    X_ode45(:,i+1) = cartpole_nl_state_prop(i, X_ode45(:,i), u_nom(:,i), model,'ode45');
+    X_ode45(:,i+1) = cartpole_nl_state_prop(i, X_ode45(:,i), u_nom(:,i), model, 0,'ode45');
 
-    X_euler(:,i+1) = cartpole_nl_state_prop(i, X_euler(:,i), u_nom(:,i), model);
+    X_euler(:,i+1) = cartpole_nl_state_prop(i, X_euler(:,i), u_nom(:,i), model, 0);
 end
 
 %% plotting
