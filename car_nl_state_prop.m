@@ -9,7 +9,7 @@ else
     w = reshape(w,[model.nx,1]);
 end
 
-X_out = forward_euler(t, state, U, model);
+X_out = RK4(t, state, U, model);
 state_n = X_out + w;
 
 

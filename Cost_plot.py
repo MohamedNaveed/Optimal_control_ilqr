@@ -12,7 +12,7 @@ params = {'axes.labelsize':16,
             'xtick.labelsize':14,
             'ytick.labelsize':14,
             'text.usetex':True,
-            'figure.figsize':[4.5,3.0]}
+            'figure.figsize':[4.5,3.2]}
 pylab.rcParams.update(params)
 
 PLOT_MPC = True #False #
