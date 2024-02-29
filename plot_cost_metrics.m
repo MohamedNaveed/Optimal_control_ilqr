@@ -30,7 +30,7 @@ if SAVE_PLOT
     set(fig,...
         'PaperPosition',[0 0 screenposition(3:4)],...
         'PaperSize',[screenposition(3:4)]);
-    print -dpdf -painters '/home/naveed/Documents/Optimal_control_ilqr/plots/car/total_cost_car.pdf'
+    print -dpdf -painters '/home/naveed/Documents/Optimal_control_ilqr/plots/unicycle/total_cost_unicycle.pdf'
 end
 
 fig = figure;
@@ -55,7 +55,7 @@ if SAVE_PLOT
     set(fig,...
         'PaperPosition',[0 0 screenposition(3:4)],...
         'PaperSize',[screenposition(3:4)]);
-    print -dpdf -painters '/home/naveed/Documents/Optimal_control_ilqr/plots/car/terminal_cost_car.pdf'
+    print -dpdf -painters '/home/naveed/Documents/Optimal_control_ilqr/plots/unicycle/terminal_cost_unicycle.pdf'
 end
 
 fig =figure;
@@ -76,7 +76,7 @@ if SAVE_PLOT
     set(fig,...
         'PaperPosition',[0 0 screenposition(3:4)],...
         'PaperSize',[screenposition(3:4)]);
-    print -dpdf -painters '/home/naveed/Documents/Optimal_control_ilqr/plots/car/error_car.pdf'
+    print -dpdf -painters '/home/naveed/Documents/Optimal_control_ilqr/plots/unicycle/error_unicycle.pdf'
 end
 
 end

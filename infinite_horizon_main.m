@@ -2,8 +2,8 @@
 clear;clc;
 %load('pendulum_init_guess_T10_U.mat');
 %load('data/cartpole_init_guess_T10.mat');
-SAVE_file = false;
-model = model_register('car');
+SAVE_file = true;
+model = model_register('unicycle');
 model.name
 disp('initial state');
 model.X0
@@ -25,11 +25,11 @@ else
     K = zeros(model.nu,model.nx);
 end
 
-total_time = 10000;
+total_time = 1000;
 maxIte = 100;
 
 %% iterate over every T
-T_list = [10, 20, 30, 50, 70, 100, 200, 300, 500];
+T_list = [5, 10, 20, 40, 70, 100, 200, 500, 1000];
 
 
 cost_ilqr = zeros(1,length(T_list));
@@ -149,5 +149,5 @@ exp_CTG_vec
 true_CTG_vec
 
 if SAVE_file
-    save("car.mat");
+    save("unicycle.mat");
 end
