@@ -99,6 +99,42 @@ elseif  strcmp(modelName, 'car')
     model.ptb = 0.0001;
     model.statePtb = 0.001;
 
+elseif  strcmp(modelName, 'unicycle')
+    model.name = 'unicycle';
+    model.u_max = 7;
+    model.dt = 0.1;
+    model.nx = 3; %[x,y,theta]
+    model.nu = 2; %[v,omega]
+    model.alpha = 1;
+    model.Xg = [1;4;pi/2]; %[x,y,theta (rad)]
+    model.X0 = [0;0;pi/3];% 
+    model.R = 1*eye(model.nu);
+    model.Q = 5*eye(model.nx);
+    model.Qf = 1000*eye(model.nx);
+    %[Ac, Bc] = cartpole_eqs(model);
+    %model.Ac = Ac; % continuous time linearised model (symbolic)
+    %model.Bc = Bc;
+    model.nl_ode = @unicycle_nl_ode;
+    model.state_prop = @car_nl_state_prop; %same as car for unicyle
+    model.cal_A_B = @unicycle_A_B;
+    % model around the equilibrium at the upright
+    U_term = [0;0];
+    [A, B] = unicycle_A_B(model, model.Xg, U_term);
+    model.A = A;
+    model.B = B;
+    model.C = [1 0 0 ; 0 1 0; 0 0 1];
+    
+    model.nz = size(model.C,1); %number of outputs
+    model.q = 1; %value of q required for ARMA model.
+    model.nZ = model.q*model.nz + (model.q-1)*model.nu; %information-state dimension
+    model.CC = [eye(model.nz), zeros(model.nz, model.nZ - model.nz)];%information state system C
+    model.horizon = 30; %time horizon of the finite-horizon OCP
+    model.nSim = 500;
+    model.ptb = 0.0001;
+    model.statePtb = 0.001;
+
+
+
 elseif strcmp(modelName, '1dcos')
     
     model.name = '1dcos';

@@ -164,7 +164,76 @@ elseif strcmp(modelName, 'car')
         set(fig,...
             'PaperPosition',[0 0 screenposition(3:4)],...
             'PaperSize',[screenposition(3:4)]);
-        print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/cartpole_response_T_4.pdf'
+        print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/car_response_T_4.pdf'
+    end
+
+elseif strcmp(modelName, 'unicycle')
+    
+    
+    fig = figure;
+
+    timesteps = 0:T;
+    subplot(3,2,1);
+    hold on;
+    plot(timesteps, x_nom(1,:),'LineWidth',2);
+    %xline(horizon, 'LineWidth',2);
+    y = ylim; % current y-axis limits
+    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    grid on;
+    ylabel('$x$','Interpreter','latex');
+    
+    subplot(3,2,2);
+    hold on;
+    plot(timesteps, x_nom(2,:),'LineWidth',2);
+    y = ylim; % current y-axis limits
+    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    %xline(horizon, 'LineWidth',2);
+    grid on;
+    ylabel('$y$','Interpreter','latex');
+    
+    subplot(3,2,3);
+    hold on;
+    plot(timesteps, x_nom(3,:),'LineWidth',2);
+    y = ylim; % current y-axis limits
+    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    %xline(horizon, 'LineWidth',2);
+    grid on;
+    ylabel('$\theta$','Interpreter','latex');
+
+    
+    subplot(3,2,5);
+    hold on;
+    plot(timesteps(1:T), u_nom(1,:), 'LineWidth',2);
+    y = ylim; % current y-axis limits
+    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    %xline(horizon, 'LineWidth',2);
+    grid on;
+    ylabel('$v$','Interpreter','latex');
+    xlabel('Time steps');
+
+    subplot(3,2,6);
+    hold on;
+    plot(timesteps(1:T), u_nom(2,:), 'LineWidth',2);
+    y = ylim; % current y-axis limits
+    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    %xline(horizon, 'LineWidth',2);
+    grid on;
+    ylabel('$\omega$','Interpreter','latex');
+    xlabel('Time steps');
+    
+    ax = findobj(gcf,'type','axes'); % current axes
+    set(ax, 'FontSize', font_size);
+   
+    
+    if SAVE_PLOT
+        set(fig,'Visible', 'off');
+        set(fig,'Units','inches');
+        fig.Position = [100,100,5,5];
+        screenposition = get(fig,'Position');
+        set(fig,...
+            'PaperPosition',[0 0 screenposition(3:4)],...
+            'PaperSize',[screenposition(3:4)]);
+        print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/unicycle_response_T_4.pdf'
     end
 
 elseif strcmp(modelName,'1dcos')
