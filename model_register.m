@@ -106,8 +106,8 @@ elseif  strcmp(modelName, 'unicycle')
     model.nx = 3; %[x,y,theta]
     model.nu = 2; %[v,omega]
     model.alpha = 1;
-    model.Xg = [1;4;pi/2]; %[x,y,theta (rad)]
-    model.X0 = [0;0;pi/3];% 
+    model.Xg = [1;4;0]; %[x,y,theta (rad)]
+    model.X0 = [0;0;pi/2];% 
     model.R = 1*eye(model.nu);
     model.Q = 5*eye(model.nx);
     model.Qf = 1000*eye(model.nx);

@@ -2,7 +2,7 @@
 clear;clc;
 %load('pendulum_init_guess_T10_U.mat');
 %load('data/cartpole_init_guess_T10.mat');
-SAVE_file = true;
+SAVE_file = false;
 model = model_register('unicycle');
 model.name
 disp('initial state');
@@ -29,7 +29,7 @@ total_time = 1000;
 maxIte = 100;
 
 %% iterate over every T
-T_list = [5, 10, 20, 40, 70, 100, 200, 500, 1000];
+T_list = [10];
 
 
 cost_ilqr = zeros(1,length(T_list));
@@ -87,7 +87,7 @@ for iT = 1:length(T_list)
     
     %% Terminal controller. 
     
-    T_term = total_time -T;
+    T_term = 0;%total_time -T;
     
     x_term = zeros(model.nx,T_term+1);
     u_term = zeros(model.nu,T_term);
@@ -110,12 +110,12 @@ for iT = 1:length(T_list)
         end
     
         fprintf('True CTG: %f \n', cost_term);
-    
-        %% full trajectory.
-        X = [x_nom, x_term(:,2:end)];
-        U = [u_nom, u_term];
-        %plot_trajectory(X, U, T, T_term, model.name,model.dt);
     end
+    %% full trajectory.
+    X = [x_nom, x_term(:,2:end)];
+    U = [u_nom, u_term];
+    plot_trajectory(X, U, T, T_term, model.name,model.dt);
+    
 
     %% plot cost vs timesteps
     %{
@@ -138,9 +138,9 @@ end
 
 %% plot metrics
 infinite_horizon = 0; %temporary
-SAVE_PLOT = true;
-plot_cost_metrics(T_list, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec,...
-    norm_final_state_error, infinite_horizon, SAVE_PLOT);
+SAVE_PLOT = false;
+%plot_cost_metrics(T_list, cost_ilqr, total_cost, exp_CTG_vec, true_CTG_vec,...
+%    norm_final_state_error, infinite_horizon, SAVE_PLOT);
 
 ilqr_final_state_error
 cost_ilqr
