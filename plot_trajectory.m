@@ -167,6 +167,16 @@ elseif strcmp(modelName, 'car')
         print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/car_response_T_4.pdf'
     end
 
+    figure;
+
+    plot(x_nom(1,:), x_nom(2,:),'LineWidth',2);
+    %xline(horizon, 'LineWidth',2);
+    ylim([0,4]); % current y-axis limits
+    xlim([0,1]);
+    grid on;
+    xlabel('$x$','Interpreter','latex');
+    ylabel('$y$','Interpreter','latex');
+
 elseif strcmp(modelName, 'unicycle')
     
     
@@ -223,7 +233,6 @@ elseif strcmp(modelName, 'unicycle')
     
     ax = findobj(gcf,'type','axes'); % current axes
     set(ax, 'FontSize', font_size);
-   
     
     if SAVE_PLOT
         set(fig,'Visible', 'off');
@@ -235,6 +244,16 @@ elseif strcmp(modelName, 'unicycle')
             'PaperSize',[screenposition(3:4)]);
         print -dpdf -painters '/home/naveed/Dropbox/Research/Manuscripts/CDC23/unicycle_response_T_4.pdf'
     end
+
+    figure;
+
+    plot(x_nom(1,:), x_nom(2,:),'LineWidth',2);
+    %xline(horizon, 'LineWidth',2);
+    %ylim([3.5,4.5]); % current y-axis limits
+    %xlim([0.8,1.2]);
+    grid on;
+    xlabel('$x$','Interpreter','latex');
+    ylabel('$y$','Interpreter','latex');
 
 elseif strcmp(modelName,'1dcos')
     fig = figure;
