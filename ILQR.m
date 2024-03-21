@@ -46,7 +46,7 @@ while iter <= maxIte && criteria
                 %fprintf("u_nom = %d; u_new = %d \n", u_nom(:,i), u_new(:,i));
                 state_err = compute_state_error(x_new(:,i), xg, model.name);
     
-                cost_new = cost_new + (0.5*state_err'*Q*state_err + ... 
+                cost_new = cost_new + (model.beta^i)*(0.5*state_err'*Q*state_err + ... 
                                         0.5*u_new(:,i)'*R*u_new(:,i));
     
                 x_new(:,i+1) = model.state_prop(i, x_new(:,i), u_new(:,i), model);
@@ -108,7 +108,7 @@ while iter <= maxIte && criteria
         Bt(:,:,i) = B;
 
         % gains
-        Quu(:,:,i) = Bt(:,:,i)'*Sk(:,:,i+1)*Bt(:,:,i) + R;
+        Quu(:,:,i) = Bt(:,:,i)'*Sk(:,:,i+1)*Bt(:,:,i) + (model.beta^i)*R;
         if min(eig(Quu(:,:,i))) <= 0
             disp('Quu is not positive definite')
         end
@@ -116,14 +116,15 @@ while iter <= maxIte && criteria
         kpreinv = inv(Quu(:,:,i));
         K(:,:,i) = kpreinv*Bt(:,:,i)'*Sk(:,:,i+1)*At(:,:,i);%fb gain
         Kv(:,:,i) = kpreinv*Bt(:,:,i)';
-        Ku(:,:,i) = kpreinv*R;
-        Sk(:,:,i) = At(:,:,i)'*Sk(:,:,i+1)*(At(:,:,i)-Bt(:,:,i)*K(:,:,i)) + Q;
+        Ku(:,:,i) = kpreinv*(model.beta^i)*R;
+        Sk(:,:,i) = At(:,:,i)'*Sk(:,:,i+1)*(At(:,:,i)-Bt(:,:,i)*K(:,:,i)) + (model.beta^i)*Q;
 
         state_err = compute_state_error(x_nom(:,i), xg, model.name);
-        vk(:,i) = (At(:,:,i)-Bt(:,:,i)*K(:,:,i))'*vk(:,i+1)-K(:,:,i)'*R*u_nom(:,i)+Q*state_err;
+        vk(:,i) = (At(:,:,i)-Bt(:,:,i)*K(:,:,i))'*vk(:,i+1)-...
+            K(:,:,i)'*(model.beta^i)*R*u_nom(:,i) + (model.beta^i)*Q*state_err;
 
         kt(:,i) = - Kv(:,:,i)*vk(:,i+1) - Ku(:,:,i)*u_nom(:,i); 
-        Qu = R*u_nom(:,i) + Bt(:,:,i)'*vk(:,i+1);  
+        Qu = (model.beta^i)*R*u_nom(:,i) + Bt(:,:,i)'*vk(:,i+1);  
         delta_J = delta_J + (alpha*kt(:,i)'*Qu + alpha^2/2*kt(:,i)'*Quu(:,:,i)*kt(:,i));
     end
 

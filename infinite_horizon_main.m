@@ -1,17 +1,20 @@
 %% Infinite horizon main
 clear;clc;
 %load('pendulum_init_guess_T10_U.mat');
-%load('data/cartpole_init_guess_T10.mat');
+load('u_guess_unicycle_discounted.mat');
 SAVE_file = false;
 model = model_register('unicycle');
 model.name
 disp('initial state');
 model.X0
+disp('discount factor:')
+model.beta = 0.9;
+model.beta
 model.q = 1; %for fully observed. 
 if exist('u_nom', 'var')
     u_guess_from_file = u_nom;
 else
-    u_guess_from_file = [0;0];
+    u_guess_from_file = zeros(model.nu,1);
 end
 %test_cartpole(model, model.Xg);
 
@@ -21,15 +24,15 @@ if rank(ctrb(model.A, model.B)) == model.nx
     [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 else
     %when the system is uncontrollable around the origin.
-    S = zeros(model.nx,model.nx); 
+    S = model.Qf; %zeros(model.nx,model.nx); % model.Qf; %
     K = zeros(model.nu,model.nx);
 end
 
-total_time = 1000;
-maxIte = 100;
+total_time = 10000;
+maxIte = 1000;
 
 %% iterate over every T
-T_list = [10];
+T_list = [50];
 
 
 cost_ilqr = zeros(1,length(T_list));
@@ -55,20 +58,21 @@ for iT = 1:length(T_list)
         Q_T = S;
     end
     
-    %Q_T = zeros(size(S));
     
-    %if T>length(u_guess_from_file)
-    %    u_guess = [u_guess_from_file, zeros(model.nu,T-length(u_guess_from_file))];
-    %else
-    %    u_guess = u_guess_from_file(model.nu,1:T);
-    %end
-    u_guess = zeros(model.nu,T);
+    if T>length(u_guess_from_file)
+        u_guess = [u_guess_from_file, zeros(model.nu,T-size(u_guess_from_file,2))];
+    else
+        u_guess = u_guess_from_file(:,1:T);
+    end
+    
     
     [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, T,...
                                 Q_ilqr, R_ilqr, Q_T, maxIte);
-    
-    cost_timestep = calc_cost(x_nom, u_nom, model.Xg, T, Q_ilqr, R_ilqr, Q_T, model.name);
-    
+    %%
+    [cost_timestep, cost_to_go, time_inflection] = calc_cost(x_nom, u_nom, model.Xg, T, Q_ilqr, R_ilqr, Q_T,...
+                            model.name, model.beta);
+    fprintf('Time of inflection: %d\n', time_inflection)
+
     %% plot cost convergence
     %{
     plot_trajectory(x_nom, u_nom, T, 0, model.name);
@@ -81,8 +85,8 @@ for iT = 1:length(T_list)
     %% Cost to go estimated
     state_err = compute_state_error(x_nom(:,T+1), model.Xg, model.name);
     
-    CTG_est = 0.5*state_err'*S*state_err;
-    fprintf('Estimated CTG: %f \n', CTG_est);
+    CTG_est = 0.5*state_err'*Q_T*state_err;
+    fprintf('Terminal Cost: %f \n', CTG_est);
     
     
     %% Terminal controller. 
@@ -112,19 +116,29 @@ for iT = 1:length(T_list)
         fprintf('True CTG: %f \n', cost_term);
     end
     %% full trajectory.
+    
     X = [x_nom, x_term(:,2:end)];
     U = [u_nom, u_term];
     plot_trajectory(X, U, T, T_term, model.name,model.dt);
     
 
     %% plot cost vs timesteps
-    %{
+    
     figure;
     semilogy(0:length(cost_timestep)-1, cost_timestep, 'LineWidth', 3);
     xlabel('time-steps');
     ylabel('cost incurred');
     title('Cost incurred at every time step.')
-    %}
+
+    figure;
+    semilogy(0:length(cost_to_go)-1, cost_to_go, 'LineWidth', 3);
+    xlabel('time-steps');
+    yline(0.1, 'LineWidth', 3);
+    xline(time_inflection, 'LineWidth', 3)
+    ylabel('cost-to-go');
+    grid on;
+    title('Cost to go at every time step.')
+    
     %% Cost
     
     cost_ilqr(iT) = sum(cost_timestep(1:T));
@@ -149,5 +163,5 @@ exp_CTG_vec
 true_CTG_vec
 
 if SAVE_file
-    save("unicycle.mat");
+    save("unicycle_with_terminal_cost.mat");
 end
