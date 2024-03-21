@@ -14,14 +14,9 @@ for i=1:horizon
     cost_timestep(i) = (beta^i)*cur_cost;
    
 end
-%terminal cost
-state_err = compute_state_error(x_nom(:,horizon+1), xg, modelName);
-cur_cost = 0.5*state_err'*QT*state_err;
-cost = cost + cur_cost;
-cost_timestep(horizon+1) = cur_cost;
 
 flag = 1;
-for i=1:horizon+1
+for i=1:horizon
     
     cost_to_go(i) = sum(cost_timestep(i:end));
     if ((cost_to_go(i) <= 0.1) && (flag == 1))
@@ -30,4 +25,5 @@ for i=1:horizon+1
     end
 end
 
+%}
 end
