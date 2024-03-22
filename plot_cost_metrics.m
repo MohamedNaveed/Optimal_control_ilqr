@@ -3,7 +3,7 @@ function [] = plot_cost_metrics(T_vec, cost_ilqr,...
                             norm_final_state_error, infinite_horizon, SAVE_PLOT)
 
 font_size = 14;
-M = 50; %30 for fish 
+M = 0.05; %30 for car 
 idx = find(exp_CTG_vec < M, 1);
 
 
@@ -12,17 +12,17 @@ grid on;
 hold on;
 %plot(T_vec, total_cost,'b','Marker','.','MarkerSize',17,'LineWidth',4, 'DisplayName', strcat('Transfer + ', string(newline), 'regulation'));
 plot(T_vec, cost_ilqr,'b','Marker','.','MarkerSize',17,'LineWidth',3, 'DisplayName', 'Finite horizon');
-%plot(T_vec, infinite_horizon.total_cost*ones(size(T_vec)), '--','Color','[0.4660 0.6740 0.1880]','LineWidth',3, 'DisplayName', 'Infinite horizon');
+plot(T_vec, infinite_horizon.total_cost*ones(size(T_vec)), '--','Color','[0.4660 0.6740 0.1880]','LineWidth',3, 'DisplayName', 'Infinite horizon');
 xline(T_vec(idx),'LineWidth',3, 'DisplayName', 'First hitting time');
 %ylim([200,1000]);
 %ylim([215,270]);
-xticks([0, 400, 800, 1000, 1500])
+xticks([0, 30, 60, 100, 200])
 xlabel('Transfer time $T$','FontSize',font_size,'Interpreter','latex');
 ylabel('Cost','FontSize',font_size,'Interpreter','latex');
-%h = legend('Location', 'northeast');
+h = legend('Location', 'northeast');
 ax = gca; % current axes
 ax.FontSize = font_size;
-%set(h,'FontSize',font_size,'Interpreter','latex'); %'Position',[0.6 0.2410 0.1 0.1]);
+set(h,'FontSize',font_size,'Interpreter','latex'); %'Position',[0.6 0.2410 0.1 0.1]);
 
 if SAVE_PLOT
     set(fig,'Visible', 'off');
@@ -32,7 +32,7 @@ if SAVE_PLOT
     set(fig,...
         'PaperPosition',[0 0 screenposition(3:4)],...
         'PaperSize',[screenposition(3:4)]);
-    print -dpdf -vector '/home/naveed/Documents/Optimal_control_ilqr/plots/swimmer/total_cost_case1.pdf'
+    print -dpdf -vector '/home/naveed/Documents/Optimal_control_ilqr/plots/car/total_cost_case1.pdf'
 end
 
 
@@ -63,7 +63,7 @@ if SAVE_PLOT
     set(fig,...
         'PaperPosition',[0 0 screenposition(3:4)],...
         'PaperSize',[screenposition(3:4)]);
-    print -dpdf -vector '/home/naveed/Documents/Optimal_control_ilqr/plots/swimmer/terminal_cost_case1.pdf'
+    print -dpdf -vector '/home/naveed/Documents/Optimal_control_ilqr/plots/car/terminal_cost_case1.pdf'
 end
 %{
 fig =figure;

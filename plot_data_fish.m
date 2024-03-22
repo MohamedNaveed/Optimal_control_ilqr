@@ -1,7 +1,7 @@
 % get statistics from mat file.
 clear;
 clc;
-load("data/swimmer_case1.mat"); %load("pendulum_exp_29_T_1_30_X0_75.mat");
+load("data/fish_case3.mat"); %load("pendulum_exp_29_T_1_30_X0_75.mat");
 SAVE_PLOT = true;
 
 norm_final_state_error = zeros(length(T_list));

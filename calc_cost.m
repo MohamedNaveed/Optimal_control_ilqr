@@ -16,7 +16,7 @@ for i=1:horizon
 end
 %terminal cost
 state_err = compute_state_error(x_nom(:,horizon+1), xg, modelName);
-cur_cost = 0.5*state_err'*QT*state_err;
+cur_cost = (beta^(horizon+1))*0.5*state_err'*QT*state_err;
 cost = cost + cur_cost;
 cost_timestep(horizon+1) = cur_cost;
 
