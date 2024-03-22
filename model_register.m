@@ -72,8 +72,9 @@ elseif  strcmp(modelName, 'car')
     model.nx = 4; %[x,y,theta,phi]
     model.nu = 2; %[v,omega]
     model.alpha = 1;
+    model.beta = 1; %discount factor.
     model.Xg = [1;4;pi/2;0]; %[x,y,theta (rad),phi(rad)]
-    model.X0 = [0;0;pi/3;0];% 
+    model.X0 = [-1;-4;pi/3;0];% 
     model.R = 1*eye(model.nu);
     model.Q = 5*eye(model.nx);
     model.Qf = 1000*eye(model.nx);
@@ -107,7 +108,7 @@ elseif  strcmp(modelName, 'unicycle')
     model.nu = 2; %[v,omega]
     model.alpha = 1;
     model.Xg = [1;4;0]; %[x,y,theta (rad)]
-    model.X0 = -1*model.Xg;%[-3;-12;0];% 
+    model.X0 = -100*model.Xg;%[-3;-12;0];% 
     model.R = 1*eye(model.nu);
     model.Q = 5*eye(model.nx);
     model.Qf = 100*eye(model.nx);

@@ -1,4 +1,4 @@
-function [] = plot_trajectory(x_nom, u_nom, horizon, T_term, modelName, modeldt)
+function [] = plot_trajectory(x_nom, u_nom, horizon, T_term, modelName, modeldt, Xg)
 
 if ~exist('modeldt','var')
     modeldt = 1;
@@ -99,17 +99,19 @@ elseif strcmp(modelName, 'car')
     subplot(3,2,1);
     hold on;
     plot(timesteps, x_nom(1,:),'LineWidth',2);
+    yline(Xg(1),'LineWidth',2)
     %xline(horizon, 'LineWidth',2);
     y = ylim; % current y-axis limits
-    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     grid on;
     ylabel('$x$','Interpreter','latex');
     
     subplot(3,2,2);
     hold on;
     plot(timesteps, x_nom(2,:),'LineWidth',2);
+    yline(Xg(2),'LineWidth',2)
     y = ylim; % current y-axis limits
-    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
     ylabel('$y$','Interpreter','latex');
@@ -117,8 +119,9 @@ elseif strcmp(modelName, 'car')
     subplot(3,2,3);
     hold on;
     plot(timesteps, x_nom(3,:),'LineWidth',2);
+    yline(Xg(3),'LineWidth',2)
     y = ylim; % current y-axis limits
-    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
     ylabel('$\theta$','Interpreter','latex');
@@ -126,8 +129,9 @@ elseif strcmp(modelName, 'car')
     subplot(3,2,4);
     hold on;
     plot(timesteps, x_nom(4,:),'LineWidth',2);
+    yline(Xg(4),'LineWidth',2)
     y = ylim; % current y-axis limits
-    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
     ylabel('$\phi$','Interpreter','latex');
@@ -186,6 +190,7 @@ elseif strcmp(modelName, 'unicycle')
     subplot(3,2,1);
     hold on;
     plot(timesteps, x_nom(1,:),'LineWidth',2);
+    yline(Xg(1),'LineWidth',2)
     %xline(horizon, 'LineWidth',2);
     y = ylim; % current y-axis limits
     plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
@@ -195,6 +200,7 @@ elseif strcmp(modelName, 'unicycle')
     subplot(3,2,2);
     hold on;
     plot(timesteps, x_nom(2,:),'LineWidth',2);
+    yline(Xg(2),'LineWidth',2)
     y = ylim; % current y-axis limits
     plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
@@ -204,6 +210,7 @@ elseif strcmp(modelName, 'unicycle')
     subplot(3,2,3);
     hold on;
     plot(timesteps, x_nom(3,:),'LineWidth',2);
+    yline(Xg(3),'LineWidth',2)
     y = ylim; % current y-axis limits
     plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);

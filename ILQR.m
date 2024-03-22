@@ -4,7 +4,7 @@ function [x_nom, u_nom, cost, K] = ILQR(model, x0, xg, u_nom, horizon,...
 %% variables
 
 x_nom = zeros(model.nx,horizon+1); x_nom(:,1) = x0;
-Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = QT; %CTG - hessian
+Sk = zeros(model.nx,model.nx,horizon+1); Sk(:,:,horizon+1) = model.beta^(horizon+1)*QT; %CTG - hessian
 vk = zeros(model.nx,horizon+1);%CTG - jacobian
 K = zeros(model.nu,model.nx,horizon); %feedback gain for control acting on delta x
 Kv = zeros(model.nu,model.nx,horizon);
@@ -55,7 +55,7 @@ while iter <= maxIte && criteria
 
         state_err = compute_state_error(x_new(:,horizon+1), xg, model.name);
 
-        cost_new = cost_new + 0.5*state_err'*QT*state_err;
+        cost_new = cost_new + (model.beta^(horizon+1))*0.5*state_err'*QT*state_err;
 
         if iter > 1
             change_cost_crit = (cost_new - cost(iter - 1))/delta_J;
@@ -75,7 +75,7 @@ while iter <= maxIte && criteria
             u_nom = u_new;
             state_err = compute_state_error(x_nom(:,horizon+1), xg, model.name);
 
-            vk(:,horizon+1) = QT*(state_err);
+            vk(:,horizon+1) = model.beta^(horizon+1)*QT*(state_err);
 
             %if alpha < e-14
             %    alpha=0.00000005;

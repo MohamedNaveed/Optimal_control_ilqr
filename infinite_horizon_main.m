@@ -1,14 +1,14 @@
 %% Infinite horizon main
 clear;clc;
 %load('pendulum_init_guess_T10_U.mat');
-load('u_guess_unicycle_discounted.mat');
+%load('u_guess_unicycle_discounted.mat');
 SAVE_file = false;
-model = model_register('unicycle');
+model = model_register('car');
 model.name
 disp('initial state');
 model.X0
 disp('discount factor:')
-model.beta = 0.9;
+model.beta = 1;
 model.beta
 model.q = 1; %for fully observed. 
 if exist('u_nom', 'var')
@@ -24,7 +24,7 @@ if rank(ctrb(model.A, model.B)) == model.nx
     [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 else
     %when the system is uncontrollable around the origin.
-    S = model.Qf; %zeros(model.nx,model.nx); % model.Qf; %
+    S = zeros(model.nx,model.nx); % model.Qf; %
     K = zeros(model.nu,model.nx);
 end
 
@@ -32,7 +32,7 @@ total_time = 10000;
 maxIte = 1000;
 
 %% iterate over every T
-T_list = [50];
+T_list = [1000];
 
 
 cost_ilqr = zeros(1,length(T_list));
@@ -85,8 +85,11 @@ for iT = 1:length(T_list)
     %% Cost to go estimated
     state_err = compute_state_error(x_nom(:,T+1), model.Xg, model.name);
     
-    CTG_est = 0.5*state_err'*Q_T*state_err;
-    fprintf('Terminal Cost: %f \n', CTG_est);
+    CTG_est = (model.beta^(T+1))*0.5*state_err'*Q_T*state_err;
+    fprintf('Terminal Cost with beta: %f \n', CTG_est);
+
+    phi_x = 0.5*state_err'*Q_T*state_err;
+    fprintf('Terminal Cost: %f \n', phi_x);
     
     
     %% Terminal controller. 
@@ -119,7 +122,7 @@ for iT = 1:length(T_list)
     
     X = [x_nom, x_term(:,2:end)];
     U = [u_nom, u_term];
-    plot_trajectory(X, U, T, T_term, model.name,model.dt);
+    plot_trajectory(X, U, T, T_term, model.name,model.dt,model.Xg);
     
 
     %% plot cost vs timesteps
