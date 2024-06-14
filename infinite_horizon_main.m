@@ -28,7 +28,7 @@ else
     K = zeros(model.nu,model.nx);
 end
 
-total_time = 10000;
+total_time = 100;
 maxIte = 1000;
 
 %% iterate over every T

@@ -30,13 +30,14 @@ elseif  strcmp(modelName, 'cartpole')
     model.M = 1;
     model.m = 0.01;
     model.L = 0.6;
-    model.u_max = 7;
+    model.u_max = 5;
     model.dt = 0.1;
     model.nx = 4;
     model.nu = 1;
     model.Cov = diag([0.4321,2.8743,3.6426,1.5945]); %noise covariance. 
     model.g = 9.81;
     model.alpha = 1;
+    model.beta = 1;
     model.Xg = [0;0;0*pi/180;0]; %x, xdot, theta(rad), thetadot(rad/s)
     model.X0 = [0;0;180*pi/180;0];% pole bottom is pi
     model.R = 1*eye(model.nu);
@@ -69,20 +70,20 @@ elseif  strcmp(modelName, 'car')
     model.L = 0.58; %length of the car
     model.u_max = 7;
     model.dt = 0.1;
-    model.nx = 4; %[x,y,theta,phi]
-    model.nu = 2; %[v,omega]
+    model.nx = 4; %[x,y,theta,velocity]
+    model.nu = 2; %[acceleration,steering angle(rad)]
     model.alpha = 1;
     model.beta = 1; %discount factor.
-    model.Xg = [1;4;pi/2;0]; %[x,y,theta (rad),phi(rad)]
-    model.X0 = [-1;-4;pi/3;0];% 
-    model.R = 1*eye(model.nu);
-    model.Q = 5*eye(model.nx);
-    model.Qf = 1000*eye(model.nx);
+    model.Xg = [10;3;0;1]; %[x,y,theta (rad),velocity]
+    model.X0 = [0;0;0;1];% 
+    model.R = [1, 0;0, 100];%1*eye(model.nu);
+    model.Q = 10*[1, 0, 0, 0; 0, 1, 0, 0;0, 0, 1, 0;0, 0, 0, 1];
+    model.Qf =1000*[1, 0, 0, 0; 0, 1, 0, 0;0, 0, 4, 0;0, 0, 0, 1];
     %[Ac, Bc] = cartpole_eqs(model);
     %model.Ac = Ac; % continuous time linearised model (symbolic)
     %model.Bc = Bc;
     model.nl_ode = @car_nl_ode;
-    model.state_prop = @car_nl_state_prop;
+    model.state_prop = @nl_state_prop;
     model.cal_A_B = @car_A_B;
     % model around the equilibrium at the upright
     U_term = [0;0];
@@ -117,7 +118,7 @@ elseif  strcmp(modelName, 'unicycle')
     %model.Ac = Ac; % continuous time linearised model (symbolic)
     %model.Bc = Bc;
     model.nl_ode = @unicycle_nl_ode;
-    model.state_prop = @car_nl_state_prop; %same as car for unicyle
+    model.state_prop = @nl_state_prop; %same as car for unicyle
     model.cal_A_B = @unicycle_A_B;
     % model around the equilibrium at the upright
     U_term = [0;0];
@@ -154,5 +155,51 @@ elseif strcmp(modelName, '1dcos')
     model.Q = 100*model.dt;
     model.Qf = 500;
     model.q = 1;
+
+elseif  strcmp(modelName, 'poly_2d') %Vadali Sharma system
+    model.name = 'poly_2d';
+    model.u_max = 7;
+    model.dt = 0.001;
+    model.nx = 2; %[x,y,theta]
+    model.nu = 1; %[v,omega]
+    model.alpha = 1;
+    model.Xg = [0;0]; %[x,xdot]
+    model.X0 = [0.1;0.2];
+    model.R = 1*eye(model.nu)*model.dt;
+    model.Q = 1*eye(model.nx)*model.dt;
+    model.Qf = 100*eye(model.nx);
+    model.beta = 1; %discount factor.
+    model.nl_ode = @poly_2d_nl_ode;
+    model.state_prop = @nl_state_prop; %same as car for unicyle
+    model.cal_A_B = @A_B;
+    
+    model.q = 1; %value of q required for ARMA model.
+    model.horizon = 3.0/model.dt; %time horizon of the finite-horizon OCP
+    model.nSim = 500;
+    model.ptb = 0.0001;
+    model.statePtb = 0.001;
+
+elseif  strcmp(modelName, 'poly_1d') %Vadali Sharma system
+    model.name = 'poly_2d';
+    model.u_max = 7;
+    model.dt = 0.001;
+    model.nx = 1; %[x,y,theta]
+    model.nu = 1; %[v,omega]
+    model.alpha = 1;
+    model.Xg = [0;0]; %[x,xdot]
+    model.X0 = [0.1];
+    model.R = 1*eye(model.nu)*model.dt;
+    model.Q = 1*eye(model.nx)*model.dt;
+    model.Qf = 0*eye(model.nx);
+    model.beta = 1; %discount factor.
+    model.nl_ode = @poly_2d_nl_ode;
+    model.state_prop = @nl_state_prop; %same as car for unicyle
+    model.cal_A_B = @A_B;
+    
+    model.q = 1; %value of q required for ARMA model.
+    model.horizon = 3.0/model.dt; %time horizon of the finite-horizon OCP
+    model.nSim = 500;
+    model.ptb = 0.0001;
+    model.statePtb = 0.001;
 end
 
