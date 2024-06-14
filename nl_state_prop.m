@@ -1,4 +1,4 @@
-function [state_n] = car_nl_state_prop(t, state, U, model, epsilon)
+function [state_n] = nl_state_prop(t, state, U, model, epsilon)
 
 
 if ~exist('epsilon','var')

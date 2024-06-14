@@ -134,7 +134,7 @@ elseif strcmp(modelName, 'car')
     %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
-    ylabel('$\phi$','Interpreter','latex');
+    ylabel('$v$','Interpreter','latex');
     
     subplot(3,2,5);
     hold on;
@@ -143,7 +143,7 @@ elseif strcmp(modelName, 'car')
     plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
-    ylabel('$v$','Interpreter','latex');
+    ylabel('$a$','Interpreter','latex');
     xlabel('Time steps');
 
     subplot(3,2,6);
@@ -153,7 +153,7 @@ elseif strcmp(modelName, 'car')
     plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
-    ylabel('$\omega$','Interpreter','latex');
+    ylabel('$\delta$','Interpreter','latex');
     xlabel('Time steps');
     
     ax = findobj(gcf,'type','axes'); % current axes
@@ -175,8 +175,8 @@ elseif strcmp(modelName, 'car')
 
     plot(x_nom(1,:), x_nom(2,:),'LineWidth',2);
     %xline(horizon, 'LineWidth',2);
-    ylim([0,4]); % current y-axis limits
-    xlim([0,1]);
+    ylim([-1,5]); % current y-axis limits
+    xlim([-1,12]);
     grid on;
     xlabel('$x$','Interpreter','latex');
     ylabel('$y$','Interpreter','latex');
@@ -288,5 +288,42 @@ elseif strcmp(modelName,'1dcos')
     plot(timesteps(1:T), u_nom, 'LineWidth',2);
     ylabel('u');
     xlabel('Time steps');
+
+elseif strcmp(modelName, 'poly_2d')
+
+    fig = figure;
+
+    timesteps = 0:T;
+    subplot(2,2,1);
+    hold on;
+    plot(timesteps, x_nom(1,:),'LineWidth',2);
+    yline(Xg(1),'LineWidth',2)
+    %xline(horizon, 'LineWidth',2);
+    y = ylim; % current y-axis limits
+    grid on;
+    ylabel('$x$','Interpreter','latex');
+    
+    subplot(2,2,2);
+    hold on;
+    plot(timesteps, x_nom(2,:),'LineWidth',2);
+    yline(Xg(2),'LineWidth',2)
+    y = ylim; % current y-axis limits
+    %xline(horizon, 'LineWidth',2);
+    grid on;
+    ylabel('$\dot{x}$','Interpreter','latex');
+    
+
+    subplot(2,2,3:4);
+    hold on;
+    plot(timesteps(1:T), u_nom, 'LineWidth',2);
+    y = ylim; % current y-axis limits
+    %xline(horizon, 'LineWidth',2);
+    grid on;
+    ylabel('$u$','Interpreter','latex');
+    xlabel('Time steps');
+    
+    ax = findobj(gcf,'type','axes'); % current axes
+    set(ax, 'FontSize', font_size);
+
 end
 

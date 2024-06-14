@@ -2,7 +2,7 @@
 
 clear;clc;
 
-model = model_register('car');
+model = model_register('poly_2d');
 model.name
 fprintf('initial state = %d \n', model.X0);
 fprintf('final state = %d \n', model.Xg);
@@ -11,7 +11,7 @@ fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 
 problem = 'full state'; % 'full state' | 'output' %type of cost
-maxIte = 100;
+maxIte = 500;
 
 % open loop ilqr
 if strcmp(problem,'output')
@@ -36,20 +36,16 @@ else
     if strcmp(model.name,'cartpole')
         load('data/cartpole_init_guess_T30.mat');
         u_guess = u_nom;
-    
     elseif strcmp(model.name,'car')
-        load('data/car_initial_guess.mat')
+        load('data/car_u_guess_T30.mat')
         u_guess = u_nom;
-        %u_guess = zeros(model.nu, model.horizon);
-    
     else
         u_guess = zeros(model.nu, model.horizon);
     end
-    
-    
+    load('data/ploy_2d_001.mat')
+    u_guess = u_nom + 10000*randn([model.nu,model.horizon]);
     x_guess = gen_traj(model.X0, u_guess, model);
-    
-    %plot_trajectory(x_guess, u_guess, model.horizon,0,model.name,model.dt, model.Xg);
+    plot_trajectory(x_guess, u_guess, model.horizon,0,model.name,model.dt, model.Xg);
 
     %% call ILQR
     [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
