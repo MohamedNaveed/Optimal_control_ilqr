@@ -56,5 +56,5 @@ else
                             model.Q, model.R, model.Qf, maxIte); %trajectory optimization using iLQR.
 end
 
-%% 
+%% plotting
 plot_trajectory(x_nom, u_nom, model.horizon,0,model.name,model.dt, model.Xg);
