@@ -85,6 +85,7 @@ elseif  strcmp(modelName, 'car')
     model.nl_ode = @car_nl_ode;
     model.state_prop = @nl_state_prop;
     model.cal_A_B = @car_A_B;
+    model.l = @car_state_cost;
     % model around the equilibrium at the upright
     U_term = [0;0];
     [A, B] = car_A_B(model, model.Xg, U_term);

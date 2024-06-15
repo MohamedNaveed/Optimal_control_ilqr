@@ -108,7 +108,7 @@ while iter <= maxIte && criteria
         Bt(:,:,i) = B;
 
         %calculate lx and lxx
-        [~, lx, lxx] = model.l(x_new(:,i), model.Xg, model.Q, true);
+        [state_cost, lx, lxx] = model.l(x_new(:,i), model.Xg, model.Q, true);
 
         % gains
         Quu(:,:,i) = Bt(:,:,i)'*Sk(:,:,i+1)*Bt(:,:,i) + R;
@@ -120,10 +120,11 @@ while iter <= maxIte && criteria
         K(:,:,i) = kpreinv*Bt(:,:,i)'*Sk(:,:,i+1)*At(:,:,i);%fb gain
         Kv(:,:,i) = kpreinv*Bt(:,:,i)';
         Ku(:,:,i) = kpreinv*R;
-        Sk(:,:,i) = At(:,:,i)'*Sk(:,:,i+1)*(At(:,:,i)-Bt(:,:,i)*K(:,:,i)) + lxx;
+        Sk(:,:,i) = At(:,:,i)'*Sk(:,:,i+1)*(At(:,:,i)-Bt(:,:,i)*K(:,:,i)) + lxx;%TODO
 
+        state_err = compute_state_error(x_nom(:,i), xg, model.name);
         vk(:,i) = (At(:,:,i)-Bt(:,:,i)*K(:,:,i))'*vk(:,i+1)-...
-            K(:,:,i)'*R*u_nom(:,i) + lx';
+            K(:,:,i)'*R*u_nom(:,i) + lx'; %TODO
 
         kt(:,i) = - Kv(:,:,i)*vk(:,i+1) - Ku(:,:,i)*u_nom(:,i); 
         Qu = R*u_nom(:,i) + Bt(:,:,i)'*vk(:,i+1);  
