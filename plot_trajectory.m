@@ -21,7 +21,7 @@ if strcmp(modelName, 'pendulum')
     subplot(3,1,3);
     plot(timesteps(1:T), u_nom, 'LineWidth',2);
     ylabel('u');
-    xlabel('Time steps');
+    xlabel('Time steps [s]');
 
 elseif strcmp(modelName, 'cartpole')
     
@@ -95,7 +95,7 @@ elseif strcmp(modelName, 'car')
     
     fig = figure;
 
-    timesteps = 0:T;
+    timesteps = (0:T)*modeldt;
     subplot(3,2,1);
     hold on;
     plot(timesteps, x_nom(1,:),'LineWidth',2);
@@ -104,7 +104,7 @@ elseif strcmp(modelName, 'car')
     y = ylim; % current y-axis limits
     %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     grid on;
-    ylabel('$x$','Interpreter','latex');
+    ylabel('$x$ [m]','Interpreter','latex');
     
     subplot(3,2,2);
     hold on;
@@ -114,7 +114,7 @@ elseif strcmp(modelName, 'car')
     %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
-    ylabel('$y$','Interpreter','latex');
+    ylabel('$y$ [m]','Interpreter','latex');
     
     subplot(3,2,3);
     hold on;
@@ -124,7 +124,7 @@ elseif strcmp(modelName, 'car')
     %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
-    ylabel('$\theta$','Interpreter','latex');
+    ylabel('$\theta$ [rad]','Interpreter','latex');
     
     subplot(3,2,4);
     hold on;
@@ -134,27 +134,27 @@ elseif strcmp(modelName, 'car')
     %plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
-    ylabel('$v$','Interpreter','latex');
+    ylabel('$v$ [m/s]','Interpreter','latex');
     
     subplot(3,2,5);
     hold on;
     plot(timesteps(1:T), u_nom(1,:), 'LineWidth',2);
     y = ylim; % current y-axis limits
-    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    plot([horizon*modeldt horizon*modeldt],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
-    ylabel('$a$','Interpreter','latex');
-    xlabel('Time steps');
+    ylabel('$a$ [m/s$^2$]','Interpreter','latex');
+    xlabel('Time steps [s]');
 
     subplot(3,2,6);
     hold on;
     plot(timesteps(1:T), u_nom(2,:), 'LineWidth',2);
     y = ylim; % current y-axis limits
-    plot([horizon horizon],[y(1) y(2)],'k','LineWidth',1)
+    plot([horizon*modeldt horizon*modeldt],[y(1) y(2)],'k','LineWidth',1)
     %xline(horizon, 'LineWidth',2);
     grid on;
-    ylabel('$\delta$','Interpreter','latex');
-    xlabel('Time steps');
+    ylabel('$\delta$ [rad]','Interpreter','latex');
+    xlabel('Time steps [s]');
     
     ax = findobj(gcf,'type','axes'); % current axes
     set(ax, 'FontSize', font_size);
@@ -172,14 +172,20 @@ elseif strcmp(modelName, 'car')
     end
 
     figure;
-
-    plot(x_nom(1,:), x_nom(2,:),'LineWidth',2);
+    hold on;
+    plot(x_nom(1,:), x_nom(2,:),'Marker', '.','MarkerSize',10, ...
+            'LineWidth',2,'DisplayName','Trajectory');
+    plot(x_nom(1,1), x_nom(2,1), 'Marker', '.', 'Color', 'r',...
+                'MarkerSize',15,'DisplayName','Start');
+    plot(Xg(1), Xg(2), 'Marker', '.', 'Color', 'g',...
+            'MarkerSize',15,'DisplayName','Goal');
     %xline(horizon, 'LineWidth',2);
     ylim([-1,5]); % current y-axis limits
     xlim([-1,12]);
     grid on;
-    xlabel('$x$','Interpreter','latex');
-    ylabel('$y$','Interpreter','latex');
+    legend();
+    xlabel('$x$ [m]','Interpreter','latex');
+    ylabel('$y$ [m]','Interpreter','latex');
 
 elseif strcmp(modelName, 'unicycle')
     
