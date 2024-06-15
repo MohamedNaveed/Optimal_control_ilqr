@@ -1,0 +1,29 @@
+function [cost, lx, lxx] = car_state_cost(x, modelXg, Q)
+
+state_err = (x - modelXg);
+
+c_obs_1 = [2.25;3;0;0]; %ellipse center.
+c_obs_2 = [14.75;3;0;0];
+E_obs_1 = [(1/2.5)^2, 0, 0, 0; 
+            0, 1, 0, 0;
+            0, 0, 0, 0;
+            0, 0, 0, 0];%parameters of the ellipse
+E_obs_2 = E_obs_1; 
+
+M = 100; % obstacle penalty factor.
+
+obs_1 = (c_obs_1 - x)'*E_obs_1*(c_obs_1 - x);
+obs_2 = (c_obs_2 - x)'*E_obs_2*(c_obs_2 - x);
+obstacle_cost =  M*(exp(-obs_1) + exp(-obs_2));
+
+cost = (0.5*state_err'*Q*state_err) + obstacle_cost;
+
+lx = state_err'*Q - 2*M*(exp(-obs_1)*(x - c_obs_1)'*E_obs_1 ...
+            + exp(-obs_2)*(x - c_obs_2)'*E_obs_2); 
+
+lxx = Q - 2*M*(exp(-obs_1)*(E_obs_1 - ...
+        2*(E_obs_1*(x - c_obs_1))*(E_obs_1*(x - c_obs_1)') + ...
+        exp(-obs_2)*(E_obs_2 - ....
+        2*E_obs_2*(x - c_obs_2)*E_obs_2*(x - c_obs_2)'));
+
+end 
