@@ -6,12 +6,12 @@ model = model_register('car');
 model.name
 fprintf('initial state = %d \n', model.X0);
 fprintf('final state = %d \n', model.Xg);
-g
+
 fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 
 problem = 'full state'; % 'full state' | 'output' %type of cost
-maxIte = 100;
+maxIte = 1000;
 
 % open loop ilqr
 if strcmp(problem,'output')
@@ -27,7 +27,7 @@ if strcmp(problem,'output')
     Q_X = model.C'*model.Q*model.C; % converting to the equivalent Q matrix for state x
     Qf_X = model.C'*model.Qf*model.C;
     
-    [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
+    [x_nom, u_nom, cost, x_trajs] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
                                 Q_X, model.R, Qf_X, maxIte); %trajectory optimization using iLQR.
 
 else
@@ -40,7 +40,7 @@ else
     elseif strcmp(model.name,'car')
         load('data/car_initial_guess.mat')
         u_guess = u_nom;
-        %u_guess = zeros(model.nu, model.horizon);
+        u_guess = zeros(model.nu, model.horizon);
     
     else
         u_guess = zeros(model.nu, model.horizon);
@@ -49,10 +49,10 @@ else
     
     x_guess = gen_traj(model.X0, u_guess, model);
     
-    %plot_trajectory(x_guess, u_guess, model.horizon,0,model.name,model.dt, model.Xg);
+    plot_trajectory(x_guess, u_guess, model.horizon,0,model.name,model.dt, model.Xg);
 
     %% call ILQR
-    [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
+    [x_nom, u_nom, cost, ~, x_traj_ite_ilqr] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
                             model.Q, model.R, model.Qf, maxIte); %trajectory optimization using iLQR.
 end
 

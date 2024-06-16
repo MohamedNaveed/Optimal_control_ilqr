@@ -172,8 +172,9 @@ elseif strcmp(modelName, 'car')
     end
     
     % Ellipse parameters
+    %c_obs_1 = [5; 1; 0; 0];
     c_obs_1 = [2.25; 3]; % Ellipse center 1
-    c_obs_2 = [14.75; 3]; % Ellipse center 2
+    c_obs_2 = [17.75; 3]; % Ellipse center 2
     E_obs_1 = [(1/2.5)^2, 0; 0, 1]; % Parameters of the ellipse
     E_obs_2 = E_obs_1; % Same parameters for the second ellipse
     
@@ -192,11 +193,13 @@ elseif strcmp(modelName, 'car')
     plot(Xg(1), Xg(2), 'Marker', '.', 'Color', 'g', ...
         'MarkerSize', 15, 'DisplayName', 'Goal');
     
-    % Plot ellipses
+    %Plot ellipses
+    
     h1 = plot_ellipse(c_obs_1, E_obs_1, 'k'); % Blue ellipse
     set(h1, 'DisplayName', 'Obstacle'); % Set legend entry for the first ellipse
     h2 = plot_ellipse(c_obs_2, E_obs_2, 'k'); % Blue ellipse
     set(h2, 'HandleVisibility', 'off');
+    
 
     % Customize plot
     ylim([-1, 5]); % current y-axis limits

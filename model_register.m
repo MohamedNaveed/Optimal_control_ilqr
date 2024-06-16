@@ -74,10 +74,10 @@ elseif  strcmp(modelName, 'car')
     model.nu = 2; %[acceleration,steering angle(rad)]
     model.alpha = 1;
     model.beta = 1; %discount factor.
-    model.Xg = [10;3;0;1]; %[x,y,theta (rad),velocity]
-    model.X0 = [0;0;0;1];% 
-    model.R = [1, 0;0, 100];%1*eye(model.nu);
-    model.Q = 10*[1, 0, 0, 0; 0, 1, 0, 0;0, 0, 1, 0;0, 0, 0, 1];
+    model.Xg = [10;3;0;3]; %[x,y,theta (rad),velocity]
+    model.X0 = [0; 0; 0; 3];% 
+    model.R = [1, 0; 0, 100];%1*eye(model.nu);
+    model.Q = 5*[1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 0.01, 0;0, 0, 0, 0.01];
     model.Qf =1000*[1, 0, 0, 0; 0, 1, 0, 0;0, 0, 4, 0;0, 0, 0, 1];
     %[Ac, Bc] = cartpole_eqs(model);
     %model.Ac = Ac; % continuous time linearised model (symbolic)

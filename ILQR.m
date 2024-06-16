@@ -1,4 +1,4 @@
-function [x_nom, u_nom, cost, K] = ILQR(model, x0, xg, u_nom, horizon,...
+function [x_nom, u_nom, cost, K, x_traj_ite_ilqr] = ILQR(model, x0, xg, u_nom, horizon,...
                     Q, R, QT, maxIte)
 
 %% variables
@@ -21,7 +21,7 @@ iter = 1;
 idx = 1;
 change_cost_crit = 1; %parameter used to check if the current solution should be kept or ignored.
 cost0 = -1;
-    
+
 %% forward pass
 
 while iter <= maxIte && criteria
@@ -89,8 +89,7 @@ while iter <= maxIte && criteria
 
     x_traj_ite_ilqr(:,:,iter) = x_nom;
     u_traj_ite_ilqr(:,:,iter) = u_nom;
-
-    state_err = compute_state_error(x_nom(:,end), xg, model.name);
+   
 
     state_error_norm = norm(state_err);
     fprintf('it = %d; cost_crit = %.4f; state_error=%.4f; cost=%.2f; lr=%d \n',iter,...
