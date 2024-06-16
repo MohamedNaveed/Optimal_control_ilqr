@@ -11,7 +11,7 @@ E_obs_2 = E_obs_1; % Same parameters for the second ellipse
 
 % Initialize video writer
 videoFile = 'trajectory_animation_wobs.avi';
-v = VideoWriter(videoFile, 'Uncompressed AVI');
+v = VideoWriter(videoFile, 'Motion JPEG AVI');
 v.FrameRate = 10; % Set frame rate
 %v.Quality = 95; % Set higher quality
 open(v);
