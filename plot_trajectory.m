@@ -180,6 +180,7 @@ elseif strcmp(modelName, 'car')
     
     figure;
     hold on;
+<<<<<<< HEAD
     
     % Plot trajectory
     plot(x_nom(1,:), x_nom(2,:), 'Marker', '.', 'MarkerSize', 10, ...
@@ -210,6 +211,21 @@ elseif strcmp(modelName, 'car')
     ylabel('$y$ [m]', 'Interpreter', 'latex');
     ax = findobj(gcf,'type','axes'); % current axes
     set(ax, 'FontSize', font_size);
+=======
+    plot(x_nom(1,:), x_nom(2,:),'Marker', '.','MarkerSize',10, ...
+            'LineWidth',2,'DisplayName','Trajectory');
+    plot(x_nom(1,1), x_nom(2,1), 'Marker', '.', 'Color', 'r',...
+                'MarkerSize',15,'DisplayName','Start');
+    plot(Xg(1), Xg(2), 'Marker', '.', 'Color', 'g',...
+            'MarkerSize',15,'DisplayName','Goal');
+    %xline(horizon, 'LineWidth',2);
+    ylim([-1,5]); % current y-axis limits
+    xlim([-1,12]);
+    grid on;
+    legend();
+    xlabel('$x$ [m]','Interpreter','latex');
+    ylabel('$y$ [m]','Interpreter','latex');
+>>>>>>> f06d9b8fed9aca4f7fd5bb4bf3f79a4a58b29c5c
 
 elseif strcmp(modelName, 'unicycle')
     
