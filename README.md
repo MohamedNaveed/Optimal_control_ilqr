@@ -9,12 +9,13 @@ Models available:
 1. Simple pendulum
 2. Cart-pole
 3. 1D nonlinear system (1dcos)
+4. Car-like robot (Kinematic Bicycle Model)
 
 Related publications to cite if you use our work:
 
 1. Mohamed, M. N. G., Goyal, R., & Chakravorty, S. An Optimal Solution to Infinite Horizon Nonlinear Control Problems. Accepted in IEEE Conference on Decision and Control (CDC) (2023).  ArXiv preprint: https://arxiv.org/abs/2304.00375.
 2. Wang, R., Parunandi, K. S., Sharma, A., Goyal, R., & Chakravorty, S. (2021, December). On the search for feedback in reinforcement learning. In IEEE Conference on Decision and Control (CDC) (pp. 1560-1567) (2021). ArXiv preprint: https://arxiv.org/abs/2002.09478
 
-### ILQR Trajectory Optimization Animation
+### ILQR Trajectory Optimization Animation For Car-like robot
 ![ILQR Trajectory Optimization Animation](trajectory_animation.gif)
 ![ILQR Trajectory with Obstacles](trajectory_animation_wobs.gif)
