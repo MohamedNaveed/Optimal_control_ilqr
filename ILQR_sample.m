@@ -6,7 +6,7 @@ model = model_register('car');
 model.name
 fprintf('initial state = %d \n', model.X0);
 fprintf('final state = %d \n', model.Xg);
-
+g
 fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 

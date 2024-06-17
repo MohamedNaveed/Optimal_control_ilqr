@@ -172,15 +172,17 @@ elseif strcmp(modelName, 'car')
     end
     
     % Ellipse parameters
+
     %c_obs_1 = [5; 1; 0; 0];
     c_obs_1 = [2.25; 3]; % Ellipse center 1
     c_obs_2 = [17.75; 3]; % Ellipse center 2
+
     E_obs_1 = [(1/2.5)^2, 0; 0, 1]; % Parameters of the ellipse
     E_obs_2 = E_obs_1; % Same parameters for the second ellipse
     
     figure;
     hold on;
-<<<<<<< HEAD
+
     
     % Plot trajectory
     plot(x_nom(1,:), x_nom(2,:), 'Marker', '.', 'MarkerSize', 10, ...
@@ -194,24 +196,19 @@ elseif strcmp(modelName, 'car')
     plot(Xg(1), Xg(2), 'Marker', '.', 'Color', 'g', ...
         'MarkerSize', 15, 'DisplayName', 'Goal');
     
+
     %Plot ellipses
     
     h1 = plot_ellipse(c_obs_1, E_obs_1, 'k'); % Blue ellipse
     set(h1, 'DisplayName', 'Obstacle'); % Set legend entry for the first ellipse
     h2 = plot_ellipse(c_obs_2, E_obs_2, 'k'); % Blue ellipse
     set(h2, 'HandleVisibility', 'off');
-    
+
 
     % Customize plot
     ylim([-1, 5]); % current y-axis limits
     xlim([-1, 20]);
-    grid on;
-    legend();
-    xlabel('$x$ [m]', 'Interpreter', 'latex');
-    ylabel('$y$ [m]', 'Interpreter', 'latex');
-    ax = findobj(gcf,'type','axes'); % current axes
-    set(ax, 'FontSize', font_size);
-=======
+
     plot(x_nom(1,:), x_nom(2,:),'Marker', '.','MarkerSize',10, ...
             'LineWidth',2,'DisplayName','Trajectory');
     plot(x_nom(1,1), x_nom(2,1), 'Marker', '.', 'Color', 'r',...
@@ -225,7 +222,9 @@ elseif strcmp(modelName, 'car')
     legend();
     xlabel('$x$ [m]','Interpreter','latex');
     ylabel('$y$ [m]','Interpreter','latex');
->>>>>>> f06d9b8fed9aca4f7fd5bb4bf3f79a4a58b29c5c
+    ax = findobj(gcf,'type','axes'); % current axes
+    set(ax, 'FontSize', font_size);
+
 
 elseif strcmp(modelName, 'unicycle')
     
