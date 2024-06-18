@@ -111,8 +111,10 @@ while iter <= maxIte && criteria
 
         % gains
         Quu(:,:,i) = Bt(:,:,i)'*Sk(:,:,i+1)*Bt(:,:,i) + R;
-        if min(eig(Quu(:,:,i))) <= 0
+        eig_min = min(eig(Quu(:,:,i)));
+        if eig_min <= 0
             disp('Quu is not positive definite')
+            Quu(:,:,i) = Quu(:,:,i) - 1.01*eig_min*eye(size(Quu(:,:,i))); %regularization
         end
 
         kpreinv = inv(Quu(:,:,i));

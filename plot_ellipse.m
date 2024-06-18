@@ -3,7 +3,7 @@ function h = plot_ellipse(center, E, color)
     ellipse_x = cos(theta);
     ellipse_y = sin(theta);
     ellipse_points = [ellipse_x; ellipse_y];
-    [V, D] = eig(inv(E)); % Compute the eigenvalues and eigenvectors
+    [V, D] = eig(pinv(E)); % Compute the eigenvalues and eigenvectors
     transform = V * sqrt(D); % Transformation matrix
 
     % Apply the transformation and translate
