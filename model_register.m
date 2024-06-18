@@ -72,7 +72,7 @@ elseif  strcmp(modelName, 'car')
     model.dt = 0.1;
     model.nx = 4; %[x,y,theta,velocity]
     model.nu = 2; %[acceleration,steering angle(rad)]
-    model.alpha = 1;
+    model.alpha = 0.1;
     model.beta = 1; %discount factor.
     % lane change goal
     %model.Xg = [10;3;0;3]; %[x,y,theta (rad),velocity]

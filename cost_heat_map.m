@@ -21,7 +21,7 @@ end
 
 % Plot heatmap using imagesc function
 figure;
-imagesc(x, y, abs(heatMap)');
+imagesc(x, y, heatMap');
 colormap jet; % Choose colormap (optional)
 colorbar; % Show color bar
 xlabel('X-axis');
@@ -32,7 +32,7 @@ set(gca,'YDir','normal'); % Ensure y-axis is normal (lower values at bottom)
 
 % Plot heatmap using imagesc function
 figure;
-imagesc(x, y, abs(lxx_map)');
+imagesc(x, y, lxx_map');
 colormap jet; % Choose colormap (optional)
 colorbar; % Show color bar
 xlabel('X-axis');

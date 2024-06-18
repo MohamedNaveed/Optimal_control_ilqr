@@ -13,4 +13,4 @@ E_obs_1 = [(1/2.5)^2, 0, 0, 0;
            0, 0, 0, 0]; % Parameters of the ellipse
 E_obs_2 = E_obs_1; 
 
-M = 1; % Obstacle penalty factor
+M = 5; % Obstacle penalty factor

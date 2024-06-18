@@ -11,7 +11,7 @@ fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 
 problem = 'full state'; % 'full state' | 'output' %type of cost
-maxIte = 100;
+maxIte = 1000;
 
 % open loop ilqr
 if strcmp(problem,'output')
@@ -38,10 +38,11 @@ else
         u_guess = u_nom;
     
     elseif strcmp(model.name,'car')
-        %load('data/car_initial_guess_straight.mat')
+        %load('data/car_initial_guess_straight_wobs.mat')
         %u_guess = u_nom;
         u_guess = zeros(model.nu, model.horizon);
-        u_guess(2,:) = 0.1*ones(model.horizon,1);
+        u_guess(2,:) = -0.04*ones(model.horizon,1);
+        u_guess(1,:) = -1*ones(model.horizon,1);
     else
         u_guess = zeros(model.nu, model.horizon);
     end
