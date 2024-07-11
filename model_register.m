@@ -72,12 +72,14 @@ elseif  strcmp(modelName, 'car')
     model.dt = 0.1;
     model.nx = 4; %[x,y,theta,velocity]
     model.nu = 2; %[acceleration,steering angle(rad)]
-    model.alpha = 1;
+    model.alpha = 0.1;
     model.beta = 1; %discount factor.
-    model.Xg = [10;3;0;1]; %[x,y,theta (rad),velocity]
-    model.X0 = [0;0;0;1];% 
-    model.R = [1, 0;0, 100];%1*eye(model.nu);
-    model.Q = 10*[1, 0, 0, 0; 0, 1, 0, 0;0, 0, 1, 0;0, 0, 0, 1];
+    % lane change goal
+    %model.Xg = [10;3;0;3]; %[x,y,theta (rad),velocity]
+    model.Xg = [15;0;0;3];
+    model.X0 = [0; 0; 0; 3];% 
+    model.R = [1, 0; 0, 100];%1*eye(model.nu);
+    model.Q = 5*[1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 0.01, 0;0, 0, 0, 0.01];
     model.Qf =1000*[1, 0, 0, 0; 0, 1, 0, 0;0, 0, 4, 0;0, 0, 0, 1];
     %[Ac, Bc] = cartpole_eqs(model);
     %model.Ac = Ac; % continuous time linearised model (symbolic)
@@ -85,6 +87,7 @@ elseif  strcmp(modelName, 'car')
     model.nl_ode = @car_nl_ode;
     model.state_prop = @nl_state_prop;
     model.cal_A_B = @car_A_B;
+    model.l = @car_state_cost;
     % model around the equilibrium at the upright
     U_term = [0;0];
     [A, B] = car_A_B(model, model.Xg, U_term);
