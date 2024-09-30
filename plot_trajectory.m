@@ -173,7 +173,7 @@ elseif strcmp(modelName, 'car')
     
     % Ellipse parameters
 
-    obstacle_params;
+    
     
     figure;
     hold on;
@@ -193,7 +193,8 @@ elseif strcmp(modelName, 'car')
     
 
     %Plot ellipses
-    
+    %{
+    obstacle_params;
     h1 = plot_ellipse(c_obs_1, E_obs_1(1:2,1:2), 'k'); % Blue ellipse
     set(h1, 'DisplayName', 'Obstacle'); % Set legend entry for the first ellipse
     h2 = plot_ellipse(c_obs_2, E_obs_2(1:2,1:2), 'k'); % Blue ellipse
@@ -210,7 +211,7 @@ elseif strcmp(modelName, 'car')
     ylabel('$y$ [m]','Interpreter','latex');
     ax = findobj(gcf,'type','axes'); % current axes
     set(ax, 'FontSize', font_size);
-
+    %}
 
 elseif strcmp(modelName, 'unicycle')
     

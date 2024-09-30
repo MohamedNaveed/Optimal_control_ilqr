@@ -21,6 +21,8 @@ cost = cost + cur_cost;
 cost_timestep(horizon+1) = cur_cost;
 
 flag = 1;
+time_step = -1; % default for time of inflection not calculated. 
+
 for i=1:horizon+1
     
     cost_to_go(i) = sum(cost_timestep(i:end));

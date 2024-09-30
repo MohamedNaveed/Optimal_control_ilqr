@@ -24,7 +24,7 @@ if rank(ctrb(model.A, model.B)) == model.nx
     [K,S,e] = dlqr(model.A, model.B, model.Q, model.R); % neglected half in matlab implementation doesn't matter
 else
     %when the system is uncontrollable around the origin.
-    S = zeros(model.nx,model.nx); % model.Qf; %
+    S = model.Qf; %zeros(model.nx,model.nx); % 
     K = zeros(model.nu,model.nx);
 end
 
@@ -32,7 +32,7 @@ total_time = 100;
 maxIte = 1000;
 
 %% iterate over every T
-T_list = [1000];
+T_list = [30];
 
 
 cost_ilqr = zeros(1,length(T_list));
@@ -69,7 +69,8 @@ for iT = 1:length(T_list)
     [x_nom, u_nom, cost] = ILQR(model, model.X0, model.Xg, u_guess, T,...
                                 Q_ilqr, R_ilqr, Q_T, maxIte);
     %%
-    [cost_timestep, cost_to_go, time_inflection] = calc_cost(x_nom, u_nom, model.Xg, T, Q_ilqr, R_ilqr, Q_T,...
+    [cost_timestep, cost_to_go, time_inflection] = calc_cost(x_nom, u_nom, ...
+                            model.Xg, T, Q_ilqr, R_ilqr, Q_T,...
                             model.name, model.beta);
     fprintf('Time of inflection: %d\n', time_inflection)
 

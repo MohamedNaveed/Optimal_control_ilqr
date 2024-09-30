@@ -70,18 +70,20 @@ elseif  strcmp(modelName, 'car')
     model.name = 'car';
     model.L = 0.58; %length of the car
     model.u_max = 7;
+    
     model.dt = 0.1;
     model.nx = 4; %[x,y,theta,velocity]
     model.nu = 2; %[acceleration,steering angle(rad)]
-    model.alpha = 0.1;
+    model.alpha = 0.7;
     model.beta = 1; %discount factor.
+    model.Cov = eye(model.nx); %noise covariance. 
     % lane change goal
-    %model.Xg = [10;3;0;3]; %[x,y,theta (rad),velocity]
-    model.Xg = [15;0;0;3];
+    model.Xg = [10;3;0;3]; %[x,y,theta (rad),velocity]
+    %model.Xg = [15;0;0;3];
     model.X0 = [0; 0; 0; 3];% 
     model.R = [1, 0; 0, 100];%1*eye(model.nu);
-    model.Q = 5*[1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 0.01, 0;0, 0, 0, 0.01];
-    model.Qf =1000*[1, 0, 0, 0; 0, 1, 0, 0;0, 0, 4, 0;0, 0, 0, 1];
+    model.Q = [1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 0.01, 0;0, 0, 0, 0.01];
+    model.Qf =100*[1, 0, 0, 0; 0, 1, 0, 0;0, 0, 2, 0;0, 0, 0, 1];
     %[Ac, Bc] = cartpole_eqs(model);
     %model.Ac = Ac; % continuous time linearised model (symbolic)
     %model.Bc = Bc;

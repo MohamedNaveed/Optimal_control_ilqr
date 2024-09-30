@@ -2,7 +2,7 @@
 
 clear;clc;
 
-model = model_register('cartpole');
+model = model_register('car');
 model.name
 model.q = 1; %full state
 fprintf('initial state = %f \n', model.X0);
@@ -25,20 +25,20 @@ maxIte = 400;
 %}
 %% MPC using ilqr solver
 
-epsilon = 0.01;
+epsilon = 0.0;
 
 maxIte = 100;
 
 x_mpc = zeros(model.nx, model.horizon+1);
 u_mpc = zeros(model.nu, model.horizon);
 x_mpc(:,1) = model.X0;
-if strcmp(model.name,'cartpole')
-        load('data/cartpole_init_guess_T30.mat');
-elseif strcmp(model.name,'car')
-    load('data/car_u_guess_T30.mat')
-end
-%u_guess = zeros(model.nu, model.horizon);
-%u_nom = u_guess
+%if strcmp(model.name,'cartpole')
+%        load('data/cartpole_init_guess_T30.mat');
+%elseif strcmp(model.name,'car')
+%    load('data/car_u_guess_T30.mat')
+%end
+u_guess = zeros(model.nu, model.horizon);
+u_nom = u_guess;
 cost_mpc = 0;
 K = zeros(model.nu,model.nx,model.horizon);
 x_nom = zeros(model.nx,model.horizon);
@@ -72,7 +72,7 @@ fprintf('Time taken %d \n', time_taken);
 
 
 %% 
-plot_trajectory(x_mpc, u_mpc, model.horizon,0,model.name,model.dt);
+plot_trajectory(x_mpc, u_mpc, model.horizon,0,model.name,model.dt, model.Xg);
 %%
 %{
 load('/home/naveed/Documents/Dynamic_programming/Data/dp_hjb_1dcos_n_200_N_300000_epsi0_1.mat');
