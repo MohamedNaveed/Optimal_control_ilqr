@@ -1,7 +1,7 @@
 function [A, B] = LLS_CD(model, X_bar, U_bar)
 
 pert = 0.1; %perturbation std dev.
-N = 100; % number of samples
+N = 10; % number of samples
 delta_x_new = zeros(model.nx, N);
 delta_x = normrnd(0,pert,[model.nx,N]);
 delta_u = normrnd(0,pert,[model.nu,N]);

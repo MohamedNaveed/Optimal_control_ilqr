@@ -2,7 +2,7 @@
 
 clear;clc;
 
-model = model_register('car');
+model = model_register('cartpole');
 model.name
 fprintf('initial state = %d \n', model.X0);
 fprintf('final state = %d \n', model.Xg);
@@ -11,7 +11,7 @@ fprintf('Horizon = %d \n', model.horizon);
 fprintf('dt = %d \n', model.dt);
 
 problem = 'full state'; % 'full state' | 'output' %type of cost
-maxIte = 1000;
+maxIte = 100;
 
 % open loop ilqr
 if strcmp(problem,'output')
@@ -47,14 +47,16 @@ else
         u_guess = zeros(model.nu, model.horizon);
     end
     
-    
+    u_guess = zeros(model.nu, model.horizon);
     x_guess = gen_traj(model.X0, u_guess, model);
     
     plot_trajectory(x_guess, u_guess, model.horizon,0,model.name,model.dt, model.Xg);
 
     %% call ILQR
+    tic;
     [x_nom, u_nom, cost, ~, x_traj_ite_ilqr] = ILQR(model, model.X0, model.Xg, u_guess, model.horizon,...
                             model.Q, model.R, model.Qf, maxIte); %trajectory optimization using iLQR.
+    toc;
 end
 
 %% plotting

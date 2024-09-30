@@ -4,9 +4,9 @@ load('cartpole_ilqr_pod_ilqr_comp_cost812.mat');
 
 error_control = (u_nom_podilqr - u_nom)./abs(u_nom);
 error_control(30) = 0;
-error_control = rmoutliers(error_control,2);
+%error_control = rmoutliers(error_control,2);
 error_state = (x_nom_podilqr - x_nom)./abs(x_nom);
-error_state = rmoutliers(error_state,2);
+%error_state = rmoutliers(error_state,2);
 T = length(u_nom);
 SAVE_PLOT = true;
 font_size = 14;
@@ -30,8 +30,9 @@ ylabel('error $\dot{x}$','Interpreter','latex');
 subplot(3,2,3);
 hold on;
 plot(timesteps, error_state(3,:),'LineWidth',2);
-yticks_values = [0, 2e-4, 4e-4, 6e-4];
-yticks(yticks_values);
+%yticks_values = [-100e-4, 2e-4, 4e-4, 6e-4];
+%ylim([-100e-4,7e-4]);
+%yticks(yticks_values);
 grid on;
 ylabel('error $\theta$','Interpreter','latex');
 
@@ -43,7 +44,7 @@ ylabel('error $\dot{\theta}$','Interpreter','latex');
 
 subplot(3,2,5:6);
 hold on;
-plot(timesteps(1:T), error_control, 'LineWidth',2);
+stairs(timesteps(1:T), error_control, 'LineWidth',2);
 grid on;
 ylabel('error $u$','Interpreter','latex');
 xlabel('Time steps');

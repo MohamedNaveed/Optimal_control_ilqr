@@ -40,9 +40,10 @@ elseif  strcmp(modelName, 'cartpole')
     model.beta = 1;
     model.Xg = [0;0;0*pi/180;0]; %x, xdot, theta(rad), thetadot(rad/s)
     model.X0 = [0;0;180*pi/180;0];% pole bottom is pi
-    model.R = 1*eye(model.nu);
-    model.Q = 10*eye(model.nx);
-    model.Qf = 1000*eye(model.nx);
+    model.R = 0.05*eye(model.nu);
+    model.Q = diag([10,40,1,1.5]);%10*eye(model.nx);
+    model.Qf = diag([2700,9000,2700,2700]);%1000*eye(model.nx);
+    model.l = @cartpole_state_cost;
     %[Ac, Bc] = cartpole_eqs(model);
     %model.Ac = Ac; % continuous time linearised model (symbolic)
     %model.Bc = Bc;
